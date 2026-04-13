@@ -1,0 +1,48 @@
+{
+  "projects": {
+    "studio-master": {
+      "path": "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master",
+      "designTypes": ["webpage", "component", "landing", "dashboard"],
+      "styles": ["modern", "minimal", "bold", "elegant"],
+      "frameworks": ["vanilla", "bootstrap", "tailwind"],
+      "features": ["responsive", "interactive", "animations", "accessibility"]
+    },
+    "squad-site": {
+      "path": "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\SQUAD",
+      "designTypes": ["webpage", "landing"],
+      "styles": ["modern", "professional"],
+      "frameworks": ["vanilla"],
+      "features": ["responsive", "interactive"]
+    }
+  },
+  "templates": {
+    "modern": {
+      "colors": ["#667eea", "#764ba2", "#f093fb", "#4ecdc4"],
+      "fonts": ["Inter", "Segoe UI", "system-ui"],
+      "components": ["cards", "buttons", "forms", "navigation"]
+    },
+    "minimal": {
+      "colors": ["#ffffff", "#f8f9fa", "#e9ecef", "#6c757d"],
+      "fonts": ["Helvetica", "Arial", "sans-serif"],
+      "components": ["simple-cards", "minimal-buttons"]
+    },
+    "bold": {
+      "colors": ["#ff6b6b", "#ffd93d", "#6bcf7f", "#4d96ff"],
+      "fonts": ["Impact", "Arial Black", "bold-sans"],
+      "components": ["bold-cards", "gradient-buttons"]
+    },
+    "elegant": {
+      "colors": ["#2d3748", "#4a5568", "#718096", "#a0aec0"],
+      "fonts": ["Georgia", "Times New Roman", "serif"],
+      "components": ["elegant-cards", "sophisticated-buttons"]
+    }
+  },
+  "settings": {
+    "defaultStyle": "modern",
+    "defaultType": "webpage",
+    "autoResponsive": true,
+    "includeAnimations": true,
+    "generateJS": true,
+    "exportAssets": true
+  }
+}

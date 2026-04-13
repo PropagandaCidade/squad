@@ -1,0 +1,20 @@
+﻿{
+    "designType":  "webpage",
+    "timestamp":  "2026-04-11 11:57:36",
+    "project":  "studio-master",
+    "results":  [
+                    {
+                        "DesignName":  "webpage_20260411_115736",
+                        "Status":  "CREATED",
+                        "Type":  "webpage",
+                        "Style":  "agency",
+                        "Files":  [
+                                      "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master\\webpage_20260411_115736.html",
+                                      "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master\\webpage_20260411_115736.css",
+                                      "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master\\webpage_20260411_115736.js"
+                                  ],
+                        "Timestamp":  "\/Date(1775919456547)\/"
+                    }
+                ],
+    "style":  "agency"
+}

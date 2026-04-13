@@ -1,0 +1,10 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+modules:
+  - name: sfx-state
+    depends_on: []
+  - name: sfx-bridge
+    depends_on: [sfx-state, sfx-visual-orchestrator]
+  - name: sfx-drag-engine
+    depends_on: [sfx-state, sfx-geometry]
+  - name: studio-waveform-zoom
+    depends_on: [studio-waveform-ruler, sfx-visual-orchestrator]

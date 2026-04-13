@@ -1,0 +1,16 @@
+updated_at: 2026-04-13T18:35:00Z
+agent_name: assistant
+display_name: Jarvina
+active_task_ids: []
+short_term_context:
+  - "Jarvina foi definida como assistente de voz oficial do SQUAD."
+  - "Hardening de autenticacao e sessao da Jarvina foi concluido."
+  - "Fluxo de audio realtime agora envia taxa de captura dinamica no mime_type."
+  - "Smoke local finalizado com 26/26 checks PASS."
+  - "Validacao estrita em servidor PHP real concluida: 15/15 PASS (auth gate ativo)."
+  - "Kit completo de agente foi estruturado em Agentes/Jarvina (config, playbook, checks, runner, reports)."
+pending_questions: []
+next_3_actions:
+  - "Executar runner full-live antes de publicar novos ajustes."
+  - "Monitorar telemetry de model response em sessoes reais."
+  - "Atualizar report diario de validacao live."

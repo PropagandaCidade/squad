@@ -1,0 +1,10 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+epics:
+  - id: EPIC-001
+    name: Timeline stability
+    owner: assistant
+    status: in_progress
+  - id: EPIC-002
+    name: Persistence reliability
+    owner: assistant
+    status: in_progress

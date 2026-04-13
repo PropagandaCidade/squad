@@ -1,0 +1,11 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+current_train: R-2026.04
+milestones:
+  - id: M1
+    name: Stabilization
+    target_date: 2026-04-20
+    status: in_progress
+  - id: M2
+    name: Hardening
+    target_date: 2026-04-27
+    status: todo

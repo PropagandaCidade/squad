@@ -1,0 +1,29 @@
+updated_at: 2026-04-13T01:07:58Z
+suites:
+  - id: SUITE-STUDIO-HUB-EDITOR-VISUAL-MASTER
+    product_area: studio-hub
+    owner_agent: assistant
+    status: pass
+    passed: 8
+    failed: 0
+    total: 8
+    command: "powershell -ExecutionPolicy Bypass -File .\\tools\\run-editor-visual-master-tests.ps1 -Port 8792 -TimeoutMs 300000"
+    evidence_links:
+      - "G:/Meu Drive/Geral/Propaganda_Cidade/Site/voice-hub-1.1.2_BETA_11-08-2025/studio-hub/tools/editor-visual-master-report.json"
+    updated_at: 2026-04-13T00:29:33Z
+  - id: SUITE-STUDIO-MASTER-EDITOR-VISUAL-MASTER
+    product_area: studio-master
+    owner_agent: assistant
+    status: pass
+    passed: 9
+    failed: 0
+    total: 9
+    command: "powershell -ExecutionPolicy Bypass -File .\\tools\\run-editor-visual-master-tests.ps1 -Port 8788 -TimeoutMs 300000"
+    evidence_links:
+      - "G:/Meu Drive/Geral/Propaganda_Cidade/Site/voice-hub-1.1.2_BETA_11-08-2025/studio-master/tools/editor-visual-master-report.json"
+    updated_at: 2026-04-13T01:07:58Z
+regression_watchlist:
+  - "Mouse wheel lock recovery while stale drag state is present."
+  - "Needle dedupe under rapid stamp + drag."
+  - "Persistence integrity after delete + F5 reload."
+  - "Double-click select-all toggle in waveform-ui."

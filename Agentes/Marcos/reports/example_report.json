@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-04-11 15:30:00",
+  "project": "studio-master",
+  "files": [
+    "assets/js/studio-waveform-zoom.js",
+    "assets/js/studio-waveform-aligner.js"
+  ],
+  "overallStatus": "PASS",
+  "results": [
+    {
+      "TestName": "StaticCheck-JS-assets/js/studio-waveform-zoom.js",
+      "Status": "PASS",
+      "Message": "Sintaxe JS válida",
+      "Details": [],
+      "Timestamp": "2026-04-11T15:30:00"
+    },
+    {
+      "TestName": "StaticCheck-JS-assets/js/studio-waveform-aligner.js",
+      "Status": "PASS",
+      "Message": "Sintaxe JS válida",
+      "Details": [],
+      "Timestamp": "2026-04-11T15:30:01"
+    },
+    {
+      "TestName": "ProjectTest-waveform-zoom-regression",
+      "Status": "PASS",
+      "Message": "Teste de zoom da waveform passou",
+      "Details": [
+        "Waveform carregada corretamente",
+        "Zoom por mouse wheel funcionou",
+        "Canvas permaneceram visíveis"
+      ],
+      "Timestamp": "2026-04-11T15:30:05"
+    },
+    {
+      "TestName": "ProjectTest-dom-visibility-check",
+      "Status": "PASS",
+      "Message": "Verificação de visibilidade DOM passou",
+      "Details": [
+        "Arquivo index.php encontrado",
+        "Diretórios assets presentes",
+        "Arquivos JS críticos localizados"
+      ],
+      "Timestamp": "2026-04-11T15:30:10"
+    }
+  ],
+  "summary": {
+    "totalTests": 4,
+    "passed": 4,
+    "failed": 0,
+    "duration": "00:00:15"
+  }
+}

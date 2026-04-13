@@ -1,0 +1,14 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+slos:
+  - id: SLO-001
+    name: Regression suite pass rate
+    target: ">= 99%"
+    window: 30d
+  - id: SLO-002
+    name: Critical bug response
+    target: "< 4h"
+    window: rolling
+slas:
+  - id: SLA-001
+    name: P0 acknowledgement
+    target: "< 30m"

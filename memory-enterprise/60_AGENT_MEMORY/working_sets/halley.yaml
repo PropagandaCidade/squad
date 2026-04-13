@@ -1,0 +1,9 @@
+﻿updated_at: 2026-04-12T14:30:00Z
+active_task_ids: []
+short_term_context:
+  - "Performance baseline pending"
+pending_questions: []
+next_3_actions:
+  - "Propose baseline metrics"
+  - "Instrument timing capture"
+  - "Update perf dashboard"

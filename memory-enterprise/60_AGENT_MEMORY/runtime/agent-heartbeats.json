@@ -1,0 +1,568 @@
+{
+    "generated_at":  "2026-04-13T18:09:25Z",
+    "agents":  {
+                   "thiago":  {
+                                  "name":  "Thiago",
+                                  "slug":  "thiago",
+                                  "status":  "done",
+                                  "updated_at":  "2026-04-12T20:23:21Z",
+                                  "started_at":  "2026-04-12T20:20:28Z",
+                                  "current_task_id":  "",
+                                  "current_task":  "",
+                                  "active_task_ids":  [
+
+                                                      ],
+                                  "last_outcome":  "success",
+                                  "note":  "Runner finalizado",
+                                  "run_count":  7,
+                                  "history":  [
+                                                  {
+                                                      "at":  "2026-04-12T20:20:28Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-902",
+                                                      "task":  "runtime check",
+                                                      "outcome":  "",
+                                                      "note":  "manual check"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:20:29Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-902",
+                                                      "task":  "runtime check",
+                                                      "outcome":  "success",
+                                                      "note":  "manual done"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:20:40Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-903",
+                                                      "task":  "TASK-903 smoke runner",
+                                                      "outcome":  "",
+                                                      "note":  "Runner iniciado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:20:41Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-903",
+                                                      "task":  "TASK-903 smoke runner",
+                                                      "outcome":  "success",
+                                                      "note":  "Runner finalizado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:08Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9903",
+                                                      "task":  "TASK-9903 runner smoke",
+                                                      "outcome":  "",
+                                                      "note":  "Runner iniciado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:09Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-9903",
+                                                      "task":  "TASK-9903 runner smoke",
+                                                      "outcome":  "success",
+                                                      "note":  "Runner finalizado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:41Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9910",
+                                                      "task":  "Simulacao curta",
+                                                      "outcome":  "",
+                                                      "note":  "tick 1/3"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:42Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9910",
+                                                      "task":  "Simulacao curta",
+                                                      "outcome":  "",
+                                                      "note":  "tick 2/3"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:44Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9910",
+                                                      "task":  "Simulacao curta",
+                                                      "outcome":  "",
+                                                      "note":  "tick 3/3"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:45Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-9910",
+                                                      "task":  "Simulacao curta",
+                                                      "outcome":  "success",
+                                                      "note":  "simulacao finalizada"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:23:20Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9903",
+                                                      "task":  "TASK-9903 runner smoke",
+                                                      "outcome":  "",
+                                                      "note":  "Runner iniciado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:23:21Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-9903",
+                                                      "task":  "TASK-9903 runner smoke",
+                                                      "outcome":  "success",
+                                                      "note":  "Runner finalizado"
+                                                  }
+                                              ]
+                              },
+                   "carlos":  {
+                                  "name":  "Carlos",
+                                  "slug":  "carlos",
+                                  "status":  "done",
+                                  "updated_at":  "2026-04-12T20:23:15Z",
+                                  "started_at":  "2026-04-12T20:22:03Z",
+                                  "current_task_id":  "",
+                                  "current_task":  "",
+                                  "active_task_ids":  [
+
+                                                      ],
+                                  "last_outcome":  "success",
+                                  "note":  "test-done",
+                                  "run_count":  2,
+                                  "history":  [
+                                                  {
+                                                      "at":  "2026-04-12T20:22:03Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9901",
+                                                      "task":  "Smoke runtime start",
+                                                      "outcome":  "",
+                                                      "note":  "test-start"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:22:04Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-9901",
+                                                      "task":  "Smoke runtime done",
+                                                      "outcome":  "success",
+                                                      "note":  "test-done"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:23:14Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-9901",
+                                                      "task":  "Smoke runtime start",
+                                                      "outcome":  "",
+                                                      "note":  "test-start"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:23:15Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-9901",
+                                                      "task":  "Smoke runtime done",
+                                                      "outcome":  "success",
+                                                      "note":  "test-done"
+                                                  }
+                                              ]
+                              },
+                   "sofia":  {
+                                 "name":  "Sofia",
+                                 "slug":  "sofia",
+                                 "status":  "done",
+                                 "updated_at":  "2026-04-12T20:23:18Z",
+                                 "started_at":  "",
+                                 "current_task_id":  "",
+                                 "current_task":  "",
+                                 "active_task_ids":  [
+
+                                                     ],
+                                 "last_outcome":  "success",
+                                 "note":  "register-task",
+                                 "run_count":  0,
+                                 "history":  [
+                                                 {
+                                                     "at":  "2026-04-12T20:22:06Z",
+                                                     "status":  "done",
+                                                     "task_id":  "TASK-9902",
+                                                     "task":  "Registro de tarefa de smoke",
+                                                     "outcome":  "success",
+                                                     "note":  "register-task"
+                                                 },
+                                                 {
+                                                     "at":  "2026-04-12T20:23:18Z",
+                                                     "status":  "done",
+                                                     "task_id":  "TASK-9902",
+                                                     "task":  "Registro de tarefa de smoke",
+                                                     "outcome":  "success",
+                                                     "note":  "register-task"
+                                                 }
+                                             ]
+                             },
+                   "otavio":  {
+                                  "name":  "Otavio",
+                                  "slug":  "otavio",
+                                  "status":  "done",
+                                  "updated_at":  "2026-04-13T00:29:33Z",
+                                  "started_at":  "2026-04-12T20:37:32Z",
+                                  "current_task_id":  "",
+                                  "current_task":  "QA Zoom studio-hub (pass)",
+                                  "active_task_ids":  [
+
+                                                      ],
+                                  "last_outcome":  "success",
+                                  "note":  "Otavio runner finalizado (pass)",
+                                  "run_count":  3,
+                                  "history":  [
+                                                  {
+                                                      "at":  "2026-04-12T20:37:32Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-ZOOM-CURSOR",
+                                                      "task":  "QA Zoom studio-master-cursor",
+                                                      "outcome":  "",
+                                                      "note":  "Otavio runner iniciado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:37:32Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-ZOOM-HUB",
+                                                      "task":  "QA Zoom studio-hub",
+                                                      "outcome":  "",
+                                                      "note":  "Otavio runner iniciado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:37:34Z",
+                                                      "status":  "failed",
+                                                      "task_id":  "TASK-ZOOM-HUB",
+                                                      "task":  "QA Zoom studio-hub",
+                                                      "outcome":  "failed",
+                                                      "note":  "Otavio runner finalizado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:38:47Z",
+                                                      "status":  "done",
+                                                      "task_id":  "TASK-ZOOM-CURSOR",
+                                                      "task":  "QA Zoom studio-master-cursor",
+                                                      "outcome":  "success",
+                                                      "note":  "Otavio runner finalizado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:39:04Z",
+                                                      "status":  "in_progress",
+                                                      "task_id":  "TASK-ZOOM-HUB",
+                                                      "task":  "QA Zoom studio-hub",
+                                                      "outcome":  "",
+                                                      "note":  "Otavio runner iniciado"
+                                                  },
+                                                  {
+                                                      "at":  "2026-04-12T20:39:05Z",
+                                                      "status":  "failed",
+                                                      "task_id":  "TASK-ZOOM-HUB",
+                                                      "task":  "QA Zoom studio-hub",
+                                                      "outcome":  "failed",
+                                                      "note":  "Otavio runner finalizado"
+                                                  }
+                                              ]
+                              },
+                   "assistant":  {
+                                     "name":  "Jarvina",
+                                     "slug":  "assistant",
+                                     "status":  "done",
+                                     "updated_at":  "2026-04-13T01:56:16Z",
+                                     "started_at":  "2026-04-12T14:30:00Z",
+                                     "current_task_id":  "",
+                                     "current_task":  "",
+                                     "active_task_ids":  [
+
+                                                         ],
+                                     "last_outcome":  "success",
+                                     "note":  "Strict PHP runtime smoke PASS (15/15)",
+                                     "run_count":  2,
+                                     "history":  [
+                                                     {
+                                                         "at":  "2026-04-13T00:29:33Z",
+                                                         "status":  "done",
+                                                         "task_id":  "TASK-ZOOM-STUDIO-HUB",
+                                                         "task":  "Studio Hub editor visual hardening + tests",
+                                                         "outcome":  "success",
+                                                         "note":  "Suite 8/8 PASS"
+                                                     },
+                                                     {
+                                                         "at":  "2026-04-13T01:09:03Z",
+                                                         "status":  "done",
+                                                         "task_id":  "TASK-ZOOM-STUDIO-MASTER",
+                                                         "task":  "Studio Master corrections + full test battery",
+                                                         "outcome":  "success",
+                                                         "note":  "Suite 9/9 PASS"
+                                                     },
+                                                     {
+                                                         "at":  "2026-04-13T01:56:16Z",
+                                                         "status":  "done",
+                                                         "task_id":  "TASK-JARVINA-HARDEN-001",
+                                                         "task":  "Jarvina live hardening (auth + audio + QA)",
+                                                         "outcome":  "success",
+                                                         "note":  "Strict PHP runtime smoke PASS"
+                                                     }
+                                                 ]
+                                 },
+                   "ricardo":  {
+                                   "name":  "Ricardo",
+                                   "slug":  "ricardo",
+                                   "status":  "done",
+                                   "updated_at":  "2026-04-13T01:28:52Z",
+                                   "started_at":  "2026-04-13T01:22:39Z",
+                                   "current_task_id":  "",
+                                   "current_task":  "",
+                                   "active_task_ids":  [
+
+                                                       ],
+                                   "last_outcome":  "success",
+                                   "note":  "smoke finalized",
+                                   "run_count":  2,
+                                   "history":  [
+                                                   {
+                                                       "at":  "2026-04-13T01:22:39Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-RT-5A-001",
+                                                       "task":  "Realtime panel smoke task with 5 agents",
+                                                       "outcome":  "",
+                                                       "note":  "tick 1/3"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T01:28:52Z",
+                                                       "status":  "done",
+                                                       "task_id":  "TASK-RT-5A-001",
+                                                       "task":  "Realtime panel smoke task with 5 agents",
+                                                       "outcome":  "success",
+                                                       "note":  "smoke finalized"
+                                                   }
+                                               ]
+                               },
+                   "mariana":  {
+                                   "name":  "Mariana",
+                                   "slug":  "mariana",
+                                   "status":  "done",
+                                   "updated_at":  "2026-04-13T01:28:52Z",
+                                   "started_at":  "2026-04-13T01:22:39Z",
+                                   "current_task_id":  "",
+                                   "current_task":  "",
+                                   "active_task_ids":  [
+
+                                                       ],
+                                   "last_outcome":  "success",
+                                   "note":  "smoke finalized",
+                                   "run_count":  2,
+                                   "history":  [
+                                                   {
+                                                       "at":  "2026-04-13T01:22:39Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-RT-5A-001",
+                                                       "task":  "Realtime panel smoke task with 5 agents",
+                                                       "outcome":  "",
+                                                       "note":  "tick 1/3"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T01:28:52Z",
+                                                       "status":  "done",
+                                                       "task_id":  "TASK-RT-5A-001",
+                                                       "task":  "Realtime panel smoke task with 5 agents",
+                                                       "outcome":  "success",
+                                                       "note":  "smoke finalized"
+                                                   }
+                                               ]
+                               },
+                   "ana":  {
+                               "name":  "Ana",
+                               "slug":  "ana",
+                               "status":  "done",
+                               "updated_at":  "2026-04-13T01:28:52Z",
+                               "started_at":  "2026-04-13T01:22:39Z",
+                               "current_task_id":  "",
+                               "current_task":  "",
+                               "active_task_ids":  [
+
+                                                   ],
+                               "last_outcome":  "success",
+                               "note":  "smoke finalized",
+                               "run_count":  2,
+                               "history":  [
+                                               {
+                                                   "at":  "2026-04-13T01:22:39Z",
+                                                   "status":  "in_progress",
+                                                   "task_id":  "TASK-RT-5A-001",
+                                                   "task":  "Realtime panel smoke task with 5 agents",
+                                                   "outcome":  "",
+                                                   "note":  "tick 1/3"
+                                               },
+                                               {
+                                                   "at":  "2026-04-13T01:28:52Z",
+                                                   "status":  "done",
+                                                   "task_id":  "TASK-RT-5A-001",
+                                                   "task":  "Realtime panel smoke task with 5 agents",
+                                                   "outcome":  "success",
+                                                   "note":  "smoke finalized"
+                                               }
+                                           ]
+                           },
+                   "carla":  {
+                                 "name":  "Carla",
+                                 "slug":  "carla",
+                                 "status":  "done",
+                                 "updated_at":  "2026-04-13T01:28:52Z",
+                                 "started_at":  "2026-04-13T01:22:39Z",
+                                 "current_task_id":  "",
+                                 "current_task":  "",
+                                 "active_task_ids":  [
+
+                                                     ],
+                                 "last_outcome":  "success",
+                                 "note":  "smoke finalized",
+                                 "run_count":  2,
+                                 "history":  [
+                                                 {
+                                                     "at":  "2026-04-13T01:22:39Z",
+                                                     "status":  "in_progress",
+                                                     "task_id":  "TASK-RT-5A-001",
+                                                     "task":  "Realtime panel smoke task with 5 agents",
+                                                     "outcome":  "",
+                                                     "note":  "tick 1/3"
+                                                 },
+                                                 {
+                                                     "at":  "2026-04-13T01:28:52Z",
+                                                     "status":  "done",
+                                                     "task_id":  "TASK-RT-5A-001",
+                                                     "task":  "Realtime panel smoke task with 5 agents",
+                                                     "outcome":  "success",
+                                                     "note":  "smoke finalized"
+                                                 }
+                                             ]
+                             },
+                   "fernando":  {
+                                    "name":  "Fernando",
+                                    "slug":  "fernando",
+                                    "status":  "done",
+                                    "updated_at":  "2026-04-13T01:28:52Z",
+                                    "started_at":  "2026-04-13T01:22:39Z",
+                                    "current_task_id":  "",
+                                    "current_task":  "",
+                                    "active_task_ids":  [
+
+                                                        ],
+                                    "last_outcome":  "success",
+                                    "note":  "smoke finalized",
+                                    "run_count":  2,
+                                    "history":  [
+                                                    {
+                                                        "at":  "2026-04-13T01:22:39Z",
+                                                        "status":  "in_progress",
+                                                        "task_id":  "TASK-RT-5A-001",
+                                                        "task":  "Realtime panel smoke task with 5 agents",
+                                                        "outcome":  "",
+                                                        "note":  "tick 1/3"
+                                                    },
+                                                    {
+                                                        "at":  "2026-04-13T01:28:52Z",
+                                                        "status":  "done",
+                                                        "task_id":  "TASK-RT-5A-001",
+                                                        "task":  "Realtime panel smoke task with 5 agents",
+                                                        "outcome":  "success",
+                                                        "note":  "smoke finalized"
+                                                    }
+                                                ]
+                                },
+                   "jarvina":  {
+                                   "name":  "Jarvina",
+                                   "slug":  "jarvina",
+                                   "status":  "done",
+                                   "updated_at":  "2026-04-13T18:09:25Z",
+                                   "started_at":  "2026-04-13T18:02:54Z",
+                                   "current_task_id":  "",
+                                   "current_task":  "",
+                                   "active_task_ids":  [
+
+                                                       ],
+                                   "last_outcome":  "success",
+                                   "note":  "Jarvina runner finalizado",
+                                   "run_count":  5,
+                                   "history":  [
+                                                   {
+                                                       "at":  "2026-04-13T18:02:54Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "",
+                                                       "note":  "Jarvina runner iniciado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:02:56Z",
+                                                       "status":  "failed",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "failed",
+                                                       "note":  "Jarvina runner finalizado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:03:35Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "",
+                                                       "note":  "Jarvina runner iniciado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:03:37Z",
+                                                       "status":  "failed",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "failed",
+                                                       "note":  "Jarvina runner finalizado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:04:31Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "",
+                                                       "note":  "Jarvina runner iniciado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:04:34Z",
+                                                       "status":  "failed",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "failed",
+                                                       "note":  "Jarvina runner finalizado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:06:59Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "",
+                                                       "note":  "Jarvina runner iniciado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:07:18Z",
+                                                       "status":  "done",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "success",
+                                                       "note":  "Jarvina runner finalizado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:08:54Z",
+                                                       "status":  "in_progress",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "",
+                                                       "note":  "Jarvina runner iniciado"
+                                                   },
+                                                   {
+                                                       "at":  "2026-04-13T18:09:25Z",
+                                                       "status":  "done",
+                                                       "task_id":  "TASK-JARVINA-LIVE-KIT",
+                                                       "task":  "Jarvina runner suite: full-live",
+                                                       "outcome":  "success",
+                                                       "note":  "Jarvina runner finalizado"
+                                                   }
+                                               ]
+                               }
+               }
+}

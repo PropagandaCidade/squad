@@ -1,0 +1,19 @@
+{
+  "projects": {
+    "studio-master": {
+      "path": "G:\Meu Drive\Geral\Propaganda_Cidade\Site\voice-hub-1.1.2_BETA_11-08-2025\_Cursor\studio-master",
+      "focus": [
+        "waveform stability",
+        "playback reliability",
+        "zoom safety",
+        "regression prevention"
+      ],
+      "qualityGates": [
+        "bug reproduced",
+        "root cause identified",
+        "fix validated",
+        "gamification registered"
+      ]
+    }
+  }
+}

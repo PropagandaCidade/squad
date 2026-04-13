@@ -1,0 +1,28 @@
+﻿schema_version: 1.0.0
+project_name: SQUAD
+timezone: America/Sao_Paulo
+canonical_read_order:
+  - 00_MANIFEST.yaml
+  - 10_STATE/10_PROJECT_STATE.yaml
+  - 30_EXECUTION/31_OPEN_TASKS.yaml
+  - 30_EXECUTION/33_RISK_REGISTER.yaml
+  - 40_QUALITY/40_TEST_STATUS.yaml
+  - 60_AGENT_MEMORY/profiles/<agent>.yaml
+  - 60_AGENT_MEMORY/working_sets/<agent>.yaml
+  - 60_AGENT_MEMORY/handoffs/latest.md
+canonical_write_targets:
+  - 10_STATE/10_PROJECT_STATE.yaml
+  - 30_EXECUTION/31_OPEN_TASKS.yaml
+  - 40_QUALITY/40_TEST_STATUS.yaml
+  - 60_AGENT_MEMORY/working_sets/<agent>.yaml
+  - 90_SESSIONS/YYYY-MM-DD/*.md
+conflict_resolution_policy:
+  mode: single_writer_per_file
+  tiebreaker: latest_updated_at
+retention_policy:
+  sessions_days: 365
+  audits_days: 730
+integrity_checks:
+  require_updated_at: true
+  require_owner: true
+  require_evidence_for_done: true

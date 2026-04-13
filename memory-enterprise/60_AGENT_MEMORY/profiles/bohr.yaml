@@ -1,0 +1,7 @@
+﻿agent_name: bohr
+role: test reliability
+owned_areas: [test design, flakiness]
+known_constraints: []
+decision_rights: []
+handoff_requirements:
+  - "Update quality dashboards"

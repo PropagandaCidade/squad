@@ -1,0 +1,39 @@
+﻿policy_name: enterprise-memory-access
+updated_at: 2026-04-12T00:00:00Z
+roles:
+  assistant:
+    read: ["*"]
+    write:
+      - 10_STATE/*
+      - 30_EXECUTION/*
+      - 40_QUALITY/*
+      - 50_OPERATIONS/*
+      - 60_AGENT_MEMORY/working_sets/assistant.yaml
+      - 60_AGENT_MEMORY/handoffs/*
+      - 80_AUDIT/*
+      - 90_SESSIONS/*
+  volta:
+    read: ["*"]
+    write:
+      - 30_EXECUTION/*
+      - 40_QUALITY/*
+      - 60_AGENT_MEMORY/working_sets/volta.yaml
+      - 90_SESSIONS/*
+  bohr:
+    read: ["*"]
+    write:
+      - 30_EXECUTION/*
+      - 40_QUALITY/*
+      - 60_AGENT_MEMORY/working_sets/bohr.yaml
+      - 90_SESSIONS/*
+  halley:
+    read: ["*"]
+    write:
+      - 30_EXECUTION/*
+      - 40_QUALITY/*
+      - 60_AGENT_MEMORY/working_sets/halley.yaml
+      - 90_SESSIONS/*
+rules:
+  - never_delete_audit_records
+  - sessions_are_append_only
+  - decisions_are_append_only

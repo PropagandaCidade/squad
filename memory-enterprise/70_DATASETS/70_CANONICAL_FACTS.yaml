@@ -1,0 +1,4 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+facts:
+  - id: FACT-001
+    statement: "SFX state is persisted at localStorage key studio_programmed_sfx"

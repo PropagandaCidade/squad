@@ -1,0 +1,17 @@
+﻿updated_at: 2026-04-12T14:15:00Z
+items:
+  - id: RW-001
+    area: drag
+    scenario: duplicate marker under rapid interactions
+    owner: volta
+    latest_status: pass
+  - id: RW-002
+    area: persistence
+    scenario: delete then reload
+    owner: assistant
+    latest_status: pass
+  - id: RW-003
+    area: wheel
+    scenario: micro/line/page mode + queue cap
+    owner: bohr
+    latest_status: pass

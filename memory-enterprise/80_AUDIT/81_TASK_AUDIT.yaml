@@ -1,0 +1,7 @@
+﻿updated_at: 2026-04-12T14:30:00Z
+records:
+  - id: TASK-AUD-INIT-001
+    task_id: TASK-001
+    audited_at: 2026-04-12T14:30:00Z
+    status: todo
+    evidence_links: []

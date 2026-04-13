@@ -1,0 +1,7 @@
+﻿agent_name: volta
+role: diagnostics
+owned_areas: [bug triage, root cause]
+known_constraints: []
+decision_rights: []
+handoff_requirements:
+  - "Attach evidence links"

@@ -1,0 +1,8 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+runbooks:
+  - id: RB-001
+    name: Regression execution
+    path: 40_QUALITY/40_TEST_STATUS.yaml
+  - id: RB-002
+    name: Incident response
+    path: 50_OPERATIONS/53_ROLLBACK_PLAYBOOK.md

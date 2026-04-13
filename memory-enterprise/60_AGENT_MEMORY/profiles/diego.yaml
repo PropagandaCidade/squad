@@ -1,0 +1,7 @@
+agent_name: diego
+role: AI Specialist
+owned_areas: []
+known_constraints: []
+decision_rights: []
+handoff_requirements:
+  - "Update working set and session log"

@@ -1,0 +1,5 @@
+﻿version: 1.0.0
+updated_at: 2026-04-12T00:00:00Z
+compatibility:
+  minimum_reader: 1.0.0
+  breaking_changes: []

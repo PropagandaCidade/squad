@@ -1,0 +1,10 @@
+﻿updated_at: 2026-04-12T14:30:00Z
+active_task_ids:
+  - TASK-002
+short_term_context:
+  - "Prepare first actionable backlog"
+pending_questions: []
+next_3_actions:
+  - "Break down priorities"
+  - "Assign owners"
+  - "Define acceptance criteria"

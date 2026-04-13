@@ -1,0 +1,62 @@
+updated_at: 2026-04-13T01:56:16Z
+tasks:
+  - id: TASK-001
+    epic: EPIC-001
+    title: Memory smoke test (update task + handoff + session log)
+    priority: P1
+    severity: S2
+    owner_agent: assistant
+    status: todo
+    dependencies: []
+    acceptance_criteria:
+      - "Task transitions todo -> in_progress -> done are recorded"
+      - "Handoff reflects latest state"
+      - "Session log entry created"
+    evidence_links: []
+    updated_at: 2026-04-12T14:30:00Z
+  - id: TASK-002
+    epic: EPIC-001
+    title: Define first real SQUAD backlog with owners
+    priority: P1
+    severity: S2
+    owner_agent: volta
+    status: todo
+    dependencies: []
+    acceptance_criteria:
+      - "At least 3 actionable tasks assigned"
+    evidence_links: []
+    updated_at: 2026-04-12T14:30:00Z
+  - id: TASK-RT-5A-001
+    epic: EPIC-RT
+    title: Realtime panel smoke task with 5 agents
+    priority: P3
+    severity: S4
+    owner_agent: ricardo
+    status: done
+    dependencies: []
+    acceptance_criteria:
+      - "Task is visible in panel task table"
+      - "Five agents show in_progress heartbeat for this task"
+      - "Realtime cycle captures live updates"
+    evidence_links:
+      - "admin-memoria-squad.html realtime validation completed"
+    updated_at: 2026-04-13T01:28:52Z
+  - id: TASK-JARVINA-HARDEN-001
+    epic: EPIC-JARVINA
+    title: Jarvina live hardening (auth + audio + QA)
+    priority: P1
+    severity: S2
+    owner_agent: assistant
+    status: done
+    dependencies: []
+    acceptance_criteria:
+      - "No admin token in URL/query string"
+      - "Templates require admin session"
+      - "Realtime audio metadata aligns with actual sample rate"
+      - "Smoke test and live validation checklist available"
+    evidence_links:
+      - "Agentes/Jarvina/checks/smoke-local.ps1 (26/26 PASS)"
+      - "Agentes/Jarvina/checks/smoke-local.ps1 strict runtime on PHP server (15/15 PASS @8095)"
+      - "Agentes/Jarvina/reports/live-validation-template.md"
+      - "Agentes/Jarvina/reports/live-validation-report-2026-04-12.md"
+    updated_at: 2026-04-13T01:56:16Z

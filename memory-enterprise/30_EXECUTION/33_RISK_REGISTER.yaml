@@ -1,0 +1,20 @@
+﻿updated_at: 2026-04-12T14:30:00Z
+risks:
+  - id: RISK-001
+    probability: medium
+    impact: medium
+    owner: assistant
+    mitigation: "Enforce read/write protocol in every cycle"
+    status: monitoring
+  - id: RISK-002
+    probability: medium
+    impact: high
+    owner: volta
+    mitigation: "Owner must be set for all tasks"
+    status: monitoring
+  - id: RISK-003
+    probability: low
+    impact: high
+    owner: bohr
+    mitigation: "Require evidence_links before done"
+    status: open

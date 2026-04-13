@@ -1,0 +1,19 @@
+﻿{
+    "designType":  "webpage",
+    "timestamp":  "2026-04-11 11:22:39",
+    "project":  "studio-master",
+    "results":  [
+                    {
+                        "DesignName":  "webpage_20260411_112239",
+                        "Status":  "CREATED",
+                        "Type":  "webpage",
+                        "Style":  "modern",
+                        "Files":  [
+                                      "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master\\webpage_20260411_112239.html",
+                                      "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master\\webpage_20260411_112239.css"
+                                  ],
+                        "Timestamp":  "\/Date(1775917359754)\/"
+                    }
+                ],
+    "style":  "modern"
+}

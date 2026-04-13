@@ -1,0 +1,27 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Logs and local runtime artifacts
+*.log
+*.out
+*.err
+jarvina-cookie*.txt
+
+# Local memory/state files
+Agentes/Jarvina/github/jarvina-memory.json
+Agentes/Jarvina/github/jarvina-memory.json.tmp
+

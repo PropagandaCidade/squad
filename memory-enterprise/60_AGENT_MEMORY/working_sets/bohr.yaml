@@ -1,0 +1,9 @@
+﻿updated_at: 2026-04-12T14:30:00Z
+active_task_ids: []
+short_term_context:
+  - "Quality templates ready"
+pending_questions: []
+next_3_actions:
+  - "Define initial quality gates"
+  - "Add first suite entries"
+  - "Track flakiness signals"

@@ -1,0 +1,7 @@
+﻿agent_name: halley
+role: performance and event flow
+owned_areas: [performance, render pipeline]
+known_constraints: []
+decision_rights: []
+handoff_requirements:
+  - "Update perf baselines"

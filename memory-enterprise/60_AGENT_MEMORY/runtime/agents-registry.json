@@ -1,0 +1,299 @@
+{
+    "generated_at":  "2026-04-13T18:09:25Z",
+    "agents":  [
+                   {
+                       "name":  "Natalia",
+                       "slug":  "natalia",
+                       "specialty":  "Innovation Manager",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/natalia.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/natalia.yaml"
+                   },
+                   {
+                       "name":  "Diego",
+                       "slug":  "diego",
+                       "specialty":  "AI Specialist",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/diego.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/diego.yaml"
+                   },
+                   {
+                       "name":  "Vinicius",
+                       "slug":  "vinicius",
+                       "specialty":  "Performance Marketing",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/vinicius.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/vinicius.yaml"
+                   },
+                   {
+                       "name":  "Antonio",
+                       "slug":  "antonio",
+                       "specialty":  "Executive Assistant",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/antonio.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/antonio.yaml"
+                   },
+                   {
+                       "name":  "Camila",
+                       "slug":  "camila",
+                       "specialty":  "Influencer Marketing",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/camila.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/camila.yaml"
+                   },
+                   {
+                       "name":  "Roberto",
+                       "slug":  "roberto",
+                       "specialty":  "Regional Manager SP",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/roberto.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/roberto.yaml"
+                   },
+                   {
+                       "name":  "Valentina",
+                       "slug":  "valentina",
+                       "specialty":  "UX Researcher",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/valentina.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/valentina.yaml"
+                   },
+                   {
+                       "name":  "Patricia",
+                       "slug":  "patricia",
+                       "specialty":  "Regional Manager RJ",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/patricia.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/patricia.yaml"
+                   },
+                   {
+                       "name":  "Sandra",
+                       "slug":  "sandra",
+                       "specialty":  "Regional Manager Nordeste",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/sandra.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/sandra.yaml"
+                   },
+                   {
+                       "name":  "Luiz",
+                       "slug":  "luiz",
+                       "specialty":  "Regional Manager Sul",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/luiz.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/luiz.yaml"
+                   },
+                   {
+                       "name":  "Beatriz",
+                       "slug":  "beatriz",
+                       "specialty":  "Legal Advisor",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/beatriz.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/beatriz.yaml"
+                   },
+                   {
+                       "name":  "assistant",
+                       "slug":  "assistant",
+                       "specialty":  "coordinator",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/assistant.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/assistant.yaml"
+                   },
+                   {
+                       "name":  "Jarvina",
+                       "slug":  "jarvina",
+                       "specialty":  "Voice Assistant Coordinator",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/jarvina.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/jarvina.yaml"
+                   },
+                   {
+                       "name":  "volta",
+                       "slug":  "volta",
+                       "specialty":  "strategy",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/volta.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/volta.yaml"
+                   },
+                   {
+                       "name":  "halley",
+                       "slug":  "halley",
+                       "specialty":  "performance",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/halley.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/halley.yaml"
+                   },
+                   {
+                       "name":  "bohr",
+                       "slug":  "bohr",
+                       "specialty":  "quality",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/bohr.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/bohr.yaml"
+                   },
+                   {
+                       "name":  "Felipe",
+                       "slug":  "felipe",
+                       "specialty":  "Talent Acquisition",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/felipe.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/felipe.yaml"
+                   },
+                   {
+                       "name":  "Renata",
+                       "slug":  "renata",
+                       "specialty":  "HR Manager",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/renata.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/renata.yaml"
+                   },
+                   {
+                       "name":  "Daniela",
+                       "slug":  "daniela",
+                       "specialty":  "People Development",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/daniela.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/daniela.yaml"
+                   },
+                   {
+                       "name":  "Otavio",
+                       "slug":  "otavio",
+                       "specialty":  "QA Zoom Studio Hub",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/otavio.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/otavio.yaml"
+                   },
+                   {
+                       "name":  "Thiago",
+                       "slug":  "thiago",
+                       "specialty":  "HR Analytics",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/thiago.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/thiago.yaml"
+                   },
+                   {
+                       "name":  "Amanda",
+                       "slug":  "amanda",
+                       "specialty":  "Social Media Manager",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/amanda.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/amanda.yaml"
+                   },
+                   {
+                       "name":  "Lucas",
+                       "slug":  "lucas",
+                       "specialty":  "SEO Specialist",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/lucas.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/lucas.yaml"
+                   },
+                   {
+                       "name":  "Bruno",
+                       "slug":  "bruno",
+                       "specialty":  "Designer GrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/bruno.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/bruno.yaml"
+                   },
+                   {
+                       "name":  "Ricardo",
+                       "slug":  "ricardo",
+                       "specialty":  "Full-Stack Developer",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/ricardo.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/ricardo.yaml"
+                   },
+                   {
+                       "name":  "Julia",
+                       "slug":  "julia",
+                       "specialty":  "Motion Designer",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/julia.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/julia.yaml"
+                   },
+                   {
+                       "name":  "Raquel",
+                       "slug":  "raquel",
+                       "specialty":  "Design Criativo",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/raquel.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/raquel.yaml"
+                   },
+                   {
+                       "name":  "Marcos",
+                       "slug":  "marcos",
+                       "specialty":  "Technical Validation Lead",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/marcos.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/marcos.yaml"
+                   },
+                   {
+                       "name":  "Carlos",
+                       "slug":  "carlos",
+                       "specialty":  "Produtor Musical",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/carlos.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/carlos.yaml"
+                   },
+                   {
+                       "name":  "Pedro",
+                       "slug":  "pedro",
+                       "specialty":  "Editor de ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âudio",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/pedro.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/pedro.yaml"
+                   },
+                   {
+                       "name":  "Sofia",
+                       "slug":  "sofia",
+                       "specialty":  "Locutora Profissional",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/sofia.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/sofia.yaml"
+                   },
+                   {
+                       "name":  "Mariana",
+                       "slug":  "mariana",
+                       "specialty":  "Copywriter",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/mariana.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/mariana.yaml"
+                   },
+                   {
+                       "name":  "Helena",
+                       "slug":  "helena",
+                       "specialty":  "Project Manager",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/helena.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/helena.yaml"
+                   },
+                   {
+                       "name":  "Gustavo",
+                       "slug":  "gustavo",
+                       "specialty":  "Data Analyst",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/gustavo.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/gustavo.yaml"
+                   },
+                   {
+                       "name":  "Igor",
+                       "slug":  "igor",
+                       "specialty":  "Strategic Planner",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/igor.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/igor.yaml"
+                   },
+                   {
+                       "name":  "MarcosJr",
+                       "slug":  "marcosjr",
+                       "specialty":  "QA Senior",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/marcosjr.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/marcosjr.yaml"
+                   },
+                   {
+                       "name":  "Laura",
+                       "slug":  "laura",
+                       "specialty":  "Customer Success",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/laura.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/laura.yaml"
+                   },
+                   {
+                       "name":  "Ana",
+                       "slug":  "ana",
+                       "specialty":  "Content Strategist",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/ana.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/ana.yaml"
+                   },
+                   {
+                       "name":  "Rafael",
+                       "slug":  "rafael",
+                       "specialty":  "Roteirista",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/rafael.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/rafael.yaml"
+                   },
+                   {
+                       "name":  "Fernando",
+                       "slug":  "fernando",
+                       "specialty":  "Business Development",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/fernando.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/fernando.yaml"
+                   },
+                   {
+                       "name":  "Eduardo",
+                       "slug":  "eduardo",
+                       "specialty":  "Closer",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/eduardo.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/eduardo.yaml"
+                   },
+                   {
+                       "name":  "Carla",
+                       "slug":  "carla",
+                       "specialty":  "Account Manager",
+                       "working_set":  "memory-enterprise/60_AGENT_MEMORY/working_sets/carla.yaml",
+                       "profile":  "memory-enterprise/60_AGENT_MEMORY/profiles/carla.yaml"
+                   }
+               ]
+}

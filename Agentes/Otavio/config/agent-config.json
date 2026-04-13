@@ -1,0 +1,14 @@
+{
+  "agent": {
+    "name": "Otavio",
+    "specialty": "QA Zoom Studio Hub",
+    "level": "Novato",
+    "points": 10,
+    "badges": [
+      "Novo Agente",
+      "Zoom Guard"
+    ],
+    "created": "20260412_000000",
+    "status": "ativo"
+  }
+}

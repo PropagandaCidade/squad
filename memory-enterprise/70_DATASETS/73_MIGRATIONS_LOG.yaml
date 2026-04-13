@@ -1,0 +1,5 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+migrations:
+  - id: MIG-001
+    description: "Enterprise memory initialized"
+    applied_at: 2026-04-12T00:00:00Z

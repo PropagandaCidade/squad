@@ -1,0 +1,25 @@
+{
+  "projects": {
+    "jarvina-live": {
+      "path": "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\SQUAD\\Agentes\\Jarvina",
+      "focus": [
+        "session authentication",
+        "websocket stability",
+        "audio uplink and downlink",
+        "turn closing and response latency",
+        "railway integration"
+      ],
+      "qualityGates": [
+        "smoke local passed",
+        "ws connect passed",
+        "audio probe passed",
+        "manual regression checklist updated"
+      ],
+      "tests": [
+        "smoke-local",
+        "ws-connect",
+        "ws-audio-probe"
+      ]
+    }
+  }
+}

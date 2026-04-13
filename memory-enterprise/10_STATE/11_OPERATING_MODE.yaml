@@ -1,0 +1,7 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+mode: execution
+change_window: normal
+incident_mode: false
+release_freeze: false
+notes:
+  - "If incident_mode=true, prioritize 50_OPERATIONS files and 30_EXECUTION/35_ESCALATIONS.yaml"

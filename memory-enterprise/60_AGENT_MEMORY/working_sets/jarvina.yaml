@@ -1,0 +1,16 @@
+updated_at: 2026-04-13T18:09:25Z
+agent_name: jarvina
+status: done
+current_task_id: ""
+current_task: ""
+active_task_ids: []
+short_term_context:
+  - "Note: Jarvina runner finalizado"
+  - "Current task: Jarvina runner suite: full-live"
+  - "Note: Jarvina runner iniciado"
+  - "Jarvina live respondeu em audio apos estabilizacao de turn handling."
+pending_questions: []
+next_3_actions:
+  - "Monitorar sessoes reais em horario de pico."
+  - "Rodar runner full-live antes de cada release."
+  - "Atualizar report diario de validacao live."

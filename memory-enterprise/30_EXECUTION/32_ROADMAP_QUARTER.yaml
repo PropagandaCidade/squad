@@ -1,0 +1,11 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+quarter: 2026-Q2
+items:
+  - id: RM-001
+    milestone: M1
+    summary: Stabilize editor interactions
+    status: in_progress
+  - id: RM-002
+    milestone: M2
+    summary: Harden persistence and incident tooling
+    status: todo

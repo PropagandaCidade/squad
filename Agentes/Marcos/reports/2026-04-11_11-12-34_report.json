@@ -1,0 +1,37 @@
+﻿{
+    "overallStatus":  "PASS",
+    "timestamp":  "2026-04-11 11:12:34",
+    "project":  "studio-master",
+    "files":  [
+                  "README.md"
+              ],
+    "results":  [
+                    {
+                        "TestName":  "ProjectTest-waveform-zoom-regression",
+                        "Status":  "PASS",
+                        "Message":  "Teste de zoom da waveform passou",
+                        "Details":  [
+
+                                    ],
+                        "Timestamp":  "\/Date(1775916754416)\/"
+                    },
+                    {
+                        "TestName":  "ProjectTest-dom-visibility-check",
+                        "Status":  "PASS",
+                        "Message":  "VerificaÃ§Ã£o de visibilidade DOM passou",
+                        "Details":  [
+
+                                    ],
+                        "Timestamp":  "\/Date(1775916754535)\/"
+                    },
+                    {
+                        "TestName":  "ProjectTest-static-validation",
+                        "Status":  "PASS",
+                        "Message":  "ValidaÃ§Ã£o estÃ¡tica jÃ¡ executada",
+                        "Details":  [
+
+                                    ],
+                        "Timestamp":  "\/Date(1775916754554)\/"
+                    }
+                ]
+}

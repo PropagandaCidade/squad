@@ -1,0 +1,32 @@
+{
+  "projects": {
+    "studio-hub": {
+      "path": "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\studio-hub",
+      "focus": [
+        "wheel zoom",
+        "waveform stability",
+        "sfx needle integrity",
+        "regression prevention"
+      ],
+      "qualityGates": [
+        "zoom engine present",
+        "wheel handling present",
+        "stress report generated"
+      ]
+    },
+    "studio-master-cursor": {
+      "path": "G:\\Meu Drive\\Geral\\Propaganda_Cidade\\Site\\voice-hub-1.1.2_BETA_11-08-2025\\_Cursor\\studio-master",
+      "focus": [
+        "real audio zoom stress",
+        "visual editor integrity",
+        "drag lock recovery",
+        "needle dedupe"
+      ],
+      "qualityGates": [
+        "editor visual suite pass",
+        "real audio stress pass",
+        "report synced"
+      ]
+    }
+  }
+}

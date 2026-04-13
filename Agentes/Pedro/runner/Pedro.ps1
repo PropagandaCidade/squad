@@ -1,0 +1,56 @@
+param(
+    [Parameter(Mandatory = $false)]
+    [string]$Task = "Execucao de tarefa de edicao de audio",
+
+    [Parameter(Mandatory = $false)]
+    [string]$Outcome = "success",
+
+    [Parameter(Mandatory = $false)]
+    [string]$Complexity = "low",
+
+    [Parameter(Mandatory = $false)]
+    [int]$Points = -1
+)
+
+Write-Host "Agente: Pedro" -ForegroundColor Cyan
+Write-Host "Especialidade: Editor de Audio" -ForegroundColor Yellow
+
+$ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+$AgentRoot = Split-Path -Parent $ScriptPath
+$GamificationScript = Join-Path $AgentRoot "..\Gamificacao\gamification.ps1"
+$HeartbeatScript = Join-Path $AgentRoot "..\Gamificacao\heartbeat.ps1"
+if (Test-Path -LiteralPath $HeartbeatScript) {
+    . $HeartbeatScript
+}
+
+$TaskId = ""
+if ($Task -match "(TASK-[0-9]+)") {
+    $TaskId = $matches[1]
+}
+
+if (Get-Command Update-AgentHeartbeat -ErrorAction SilentlyContinue) {
+    Update-AgentHeartbeat -AgentName "Pedro" -TaskId $TaskId -Task $Task -Status "in_progress" -Note "Runner iniciado" | Out-Null
+}
+
+
+if (Test-Path -LiteralPath $GamificationScript) {
+    . $GamificationScript
+    if (Get-Command Register-AgentAction -ErrorAction SilentlyContinue) {
+        if ($Points -ge 0) {
+            $g = Add-AgentPoints -AgentName "Pedro" -Points $Points -Task $Task -Badges @("Mix em Acao")
+        } else {
+            $g = Register-AgentAction -AgentName "Pedro" -Task $Task -Category "audio_production" -Complexity $Complexity -Outcome $Outcome -Badges @("Mix em Acao")
+        }
+        Write-Host ("Gamificacao: +{0} pontos (total {1})" -f $g.pointsAwarded, $g.totalPoints) -ForegroundColor Green
+    }
+}
+
+if (Get-Command Update-AgentHeartbeat -ErrorAction SilentlyContinue) {
+    $heartbeatStatus = switch (([string]$Outcome).ToLower()) {
+        "success" { "done" }
+        "blocked" { "blocked" }
+        "failed" { "failed" }
+        default { "idle" }
+    }
+    Update-AgentHeartbeat -AgentName "Pedro" -TaskId $TaskId -Task $Task -Status $heartbeatStatus -Outcome $Outcome -Note "Runner finalizado" | Out-Null
+}

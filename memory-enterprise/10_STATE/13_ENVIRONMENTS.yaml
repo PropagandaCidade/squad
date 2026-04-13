@@ -1,0 +1,14 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+environments:
+  - name: local
+    url: http://127.0.0.1:8787
+    owner: assistant
+    status: healthy
+  - name: staging
+    url: ""
+    owner: ""
+    status: unknown
+  - name: production
+    url: ""
+    owner: ""
+    status: unknown

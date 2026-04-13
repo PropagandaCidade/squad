@@ -1,0 +1,14 @@
+﻿updated_at: 2026-04-12T00:00:00Z
+entities:
+  - id: ENT-AGENT-ASSISTANT
+    type: agent
+    name: assistant
+  - id: ENT-AGENT-VOLTA
+    type: agent
+    name: volta
+  - id: ENT-AGENT-BOHR
+    type: agent
+    name: bohr
+  - id: ENT-AGENT-HALLEY
+    type: agent
+    name: halley
