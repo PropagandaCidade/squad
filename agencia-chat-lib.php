@@ -22,6 +22,21 @@ function agency_text_lower(string $value): string
     return strtolower($value);
 }
 
+function agency_normalize_text(string $value): string
+{
+    $text = agency_text_lower(trim($value));
+    if ($text === '') {
+        return '';
+    }
+    $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+    if (is_string($ascii) && trim($ascii) !== '') {
+        $text = $ascii;
+    }
+    $text = preg_replace('/[^a-z0-9@_\-\s]+/', ' ', $text) ?? $text;
+    $text = preg_replace('/\s+/', ' ', $text) ?? $text;
+    return trim($text);
+}
+
 function agency_text_contains(string $haystack, string $needle): bool
 {
     if (function_exists('mb_stripos')) {
@@ -55,6 +70,40 @@ function agency_runtime_file(string $docRoot, string $fileName): string
         . $fileName;
 }
 
+function agency_registry_path(string $docRoot): string
+{
+    return agency_runtime_file($docRoot, 'agents-registry.json');
+}
+
+/**
+ * @return array{generated_at:string,agents:array<int,mixed>}
+ */
+function agency_load_registry_doc(string $docRoot): array
+{
+    $path = agency_registry_path($docRoot);
+    $doc = agency_read_json_file(
+        $path,
+        [
+            'generated_at' => agency_now_iso(),
+            'agents' => [],
+        ]
+    );
+    if (!isset($doc['agents']) || !is_array($doc['agents'])) {
+        $doc['agents'] = [];
+    }
+    if (!isset($doc['generated_at']) || !is_string($doc['generated_at'])) {
+        $doc['generated_at'] = agency_now_iso();
+    }
+    return $doc;
+}
+
+function agency_save_registry_doc(string $docRoot, array $doc): bool
+{
+    $doc['generated_at'] = agency_now_iso();
+    $path = agency_registry_path($docRoot);
+    return agency_write_json_file($path, $doc);
+}
+
 function agency_ensure_parent_dir(string $path): void
 {
     $dir = dirname($path);
@@ -71,6 +120,9 @@ function agency_read_json_file(string $path, array $defaultValue): array
     $raw = @file_get_contents($path);
     if (!is_string($raw) || trim($raw) === '') {
         return $defaultValue;
+    }
+    if (substr($raw, 0, 3) === "\xEF\xBB\xBF") {
+        $raw = substr($raw, 3);
     }
     $decoded = json_decode($raw, true);
     return is_array($decoded) ? $decoded : $defaultValue;
@@ -225,13 +277,56 @@ function agency_recent_history_text(array $session, int $limit = 8): string
     return implode("\n", $lines);
 }
 
+function agency_load_company_context(string $docRoot): string
+{
+    $sources = [
+        [
+            'label' => 'estado_do_projeto',
+            'path' => $docRoot . DIRECTORY_SEPARATOR . 'memory-enterprise' . DIRECTORY_SEPARATOR . '10_STATE' . DIRECTORY_SEPARATOR . '10_PROJECT_STATE.yaml',
+            'limit' => 900,
+        ],
+        [
+            'label' => 'handoff_recente',
+            'path' => $docRoot . DIRECTORY_SEPARATOR . 'memory-enterprise' . DIRECTORY_SEPARATOR . '60_AGENT_MEMORY' . DIRECTORY_SEPARATOR . 'handoffs' . DIRECTORY_SEPARATOR . 'latest.md',
+            'limit' => 700,
+        ],
+    ];
+
+    $parts = [];
+    foreach ($sources as $src) {
+        $path = (string)$src['path'];
+        if (!is_file($path) || !is_readable($path)) {
+            continue;
+        }
+        $raw = @file_get_contents($path);
+        if (!is_string($raw) || trim($raw) === '') {
+            continue;
+        }
+        $compact = trim(preg_replace('/\s+/u', ' ', $raw) ?? $raw);
+        if ($compact === '') {
+            continue;
+        }
+        $limit = (int)($src['limit'] ?? 600);
+        if ($limit < 120) {
+            $limit = 120;
+        }
+        if (agency_text_length($compact) > $limit) {
+            $compact = agency_text_substr($compact, 0, $limit - 1) . '…';
+        }
+        $parts[] = '[' . (string)$src['label'] . '] ' . $compact;
+    }
+
+    return implode("\n", $parts);
+}
+
 function agency_model_system_prompt(
     array $agent,
     array $context,
     array $topicDepartments,
     bool $responsibilityQuestion,
     string $preferredName,
-    bool $isLeader
+    bool $isLeader,
+    string $companyContext
 ): string {
     $name = (string)($agent['name'] ?? 'Agente');
     $role = trim((string)($context['role'] ?? 'especialista'));
@@ -248,6 +343,7 @@ function agency_model_system_prompt(
     $currentTask = trim((string)($context['current_task'] ?? ''));
     $status = trim((string)($context['status'] ?? ''));
     $userName = $preferredName !== '' ? $preferredName : 'CEO';
+    $company = trim($companyContext) !== '' ? $companyContext : 'sem contexto corporativo carregado';
 
     return trim(
         "Voce e {$name}, {$role}, do departamento {$deptLabel}.\n" .
@@ -262,11 +358,13 @@ function agency_model_system_prompt(
         "- Proximas acoes: {$actions}\n" .
         "- Lider do assunto: " . ($isLeader ? 'sim' : 'nao') . "\n" .
         "- Pergunta de responsabilidade: " . ($responsibilityQuestion ? 'sim' : 'nao') . "\n" .
+        "Contexto corporativo consolidado:\n{$company}\n" .
         "Regras:\n" .
         "1) Responda entre 2 e 5 frases.\n" .
         "2) Se for pergunta de responsabilidade, diga quem lidera e quem executa.\n" .
         "3) Se faltar dado, diga o que vai validar agora.\n" .
         "4) Nao invente numeros nem fatos internos sem base no contexto.\n" .
+        "6) Quando o usuario emitir ordem operacional, responda com acao concreta, dono e proximo passo.\n" .
         "5) Evite texto genérico e evite repetir exatamente o mesmo padrão em toda resposta."
     );
 }
@@ -407,7 +505,8 @@ function agency_generate_agent_reply_with_model(
     bool $responsibilityQuestion,
     string $preferredName,
     bool $isLeader,
-    array $session
+    array $session,
+    string $companyContext
 ): array {
     $enabled = (bool)($modelConfig['enabled'] ?? false);
     $provider = (string)($modelConfig['provider'] ?? 'none');
@@ -424,7 +523,8 @@ function agency_generate_agent_reply_with_model(
         $topicDepartments,
         $responsibilityQuestion,
         $preferredName,
-        $isLeader
+        $isLeader,
+        $companyContext
     );
     $userPrompt = agency_model_user_prompt($message, $session);
 
@@ -625,12 +725,11 @@ function agency_yaml_list(string $text, string $key): array
 }
 
 /**
- * @return array<int, array{name:string,slug:string,specialty:string,working_set:string,profile:string}>
+ * @return array<int, array{name:string,slug:string,specialty:string,working_set:string,profile:string,employment_status:string,active:bool,dismissed_at:string,dismissed_by:string,dismissal_reason:string}>
  */
-function agency_load_registry_agents(string $docRoot): array
+function agency_load_registry_agents(string $docRoot, bool $includeInactive = false): array
 {
-    $path = agency_runtime_file($docRoot, 'agents-registry.json');
-    $data = agency_read_json_file($path, ['agents' => []]);
+    $data = agency_load_registry_doc($docRoot);
     $rows = isset($data['agents']) && is_array($data['agents']) ? $data['agents'] : [];
 
     $out = [];
@@ -649,13 +748,41 @@ function agency_load_registry_agents(string $docRoot): array
         if ($slug === '') {
             $slug = agency_slug($name);
         }
+        $employmentStatus = agency_text_lower(trim((string)($row['employment_status'] ?? 'active')));
+        if ($employmentStatus === '') {
+            $employmentStatus = 'active';
+        }
+        $active = true;
+        if (array_key_exists('active', $row)) {
+            $active = (bool)$row['active'];
+        } elseif ($employmentStatus === 'dismissed') {
+            $active = false;
+        }
+        if (!$active) {
+            $employmentStatus = 'dismissed';
+        }
+
         $out[] = [
             'name' => $name,
             'slug' => $slug,
             'specialty' => trim((string)($row['specialty'] ?? '')),
             'working_set' => trim((string)($row['working_set'] ?? '')),
             'profile' => trim((string)($row['profile'] ?? '')),
+            'employment_status' => $employmentStatus,
+            'active' => $active,
+            'dismissed_at' => trim((string)($row['dismissed_at'] ?? '')),
+            'dismissed_by' => trim((string)($row['dismissed_by'] ?? '')),
+            'dismissal_reason' => trim((string)($row['dismissal_reason'] ?? '')),
         ];
+    }
+
+    if (!$includeInactive) {
+        $out = array_values(
+            array_filter(
+                $out,
+                static fn(array $a): bool => (bool)($a['active'] ?? true) && (string)($a['employment_status'] ?? 'active') !== 'dismissed'
+            )
+        );
     }
 
     usort(
@@ -812,6 +939,219 @@ function agency_parse_mentions(string $message): array
         }
     }
     return array_values(array_unique($mentions));
+}
+
+/**
+ * @param array<int, array<string,mixed>> $agents
+ * @return array{action:string,targets:array<int,array<string,mixed>>,reason:string,mention_all:bool}
+ */
+function agency_detect_hr_action(string $message, array $agents): array
+{
+    $normalized = agency_normalize_text($message);
+    $hasDismissVerb = preg_match('/\b(demit|demissao|deslig|dispens|afast)\w*\b/', $normalized) === 1;
+    if (!$hasDismissVerb) {
+        return [
+            'action' => 'none',
+            'targets' => [],
+            'reason' => '',
+            'mention_all' => false,
+        ];
+    }
+
+    $mentions = agency_parse_mentions($message);
+    $mentionAll = in_array('todos', $mentions, true) || in_array('all', $mentions, true)
+        || preg_match('/\b(todos|todo mundo)\b/', $normalized) === 1;
+    $targets = agency_resolve_mentions($agents, $mentions);
+
+    // Also detect names written sem @
+    $msgPadded = ' ' . $normalized . ' ';
+    foreach ($agents as $agent) {
+        if (!is_array($agent)) {
+            continue;
+        }
+        $name = trim((string)($agent['name'] ?? ''));
+        $slug = trim((string)($agent['slug'] ?? ''));
+        if ($name === '' && $slug === '') {
+            continue;
+        }
+        $nameNorm = agency_normalize_text($name);
+        if ($nameNorm !== '' && strpos($msgPadded, ' ' . $nameNorm . ' ') !== false) {
+            $targets[] = $agent;
+            continue;
+        }
+        $slugNorm = agency_normalize_text($slug);
+        if ($slugNorm !== '' && strpos($msgPadded, ' ' . $slugNorm . ' ') !== false) {
+            $targets[] = $agent;
+        }
+    }
+
+    if ($mentionAll && count($targets) === 0) {
+        foreach ($agents as $agent) {
+            if (!is_array($agent)) {
+                continue;
+            }
+            if ((bool)($agent['active'] ?? true)) {
+                $targets[] = $agent;
+            }
+        }
+    }
+
+    $uniq = [];
+    foreach ($targets as $target) {
+        if (!is_array($target)) {
+            continue;
+        }
+        $slug = trim((string)($target['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug((string)($target['name'] ?? ''));
+        }
+        if ($slug === '') {
+            continue;
+        }
+        $uniq[$slug] = $target;
+    }
+    $targets = array_values($uniq);
+
+    $reason = '';
+    if (preg_match('/\b(?:por|motivo|razao|razão)\b\s+(.+)$/iu', $message, $m) === 1) {
+        $reason = trim((string)($m[1] ?? ''));
+    }
+    if ($reason === '') {
+        $reason = 'nao informado';
+    }
+
+    return [
+        'action' => 'dismiss',
+        'targets' => $targets,
+        'reason' => $reason,
+        'mention_all' => $mentionAll,
+    ];
+}
+
+/**
+ * @param array<int, array<string,mixed>> $targets
+ * @return array{ok:bool,dismissed:array<int,array<string,string>>,already_dismissed:array<int,array<string,string>>,not_found:array<int,string>}
+ */
+function agency_apply_dismissals(string $docRoot, array $targets, string $actorUserId, string $reason): array
+{
+    $doc = agency_load_registry_doc($docRoot);
+    $rows = isset($doc['agents']) && is_array($doc['agents']) ? $doc['agents'] : [];
+
+    $targetMap = [];
+    foreach ($targets as $target) {
+        if (!is_array($target)) {
+            continue;
+        }
+        $slug = trim((string)($target['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug((string)($target['name'] ?? ''));
+        }
+        if ($slug === '') {
+            continue;
+        }
+        $targetMap[$slug] = [
+            'name' => trim((string)($target['name'] ?? $slug)),
+            'slug' => $slug,
+        ];
+    }
+
+    $dismissed = [];
+    $already = [];
+    $matched = [];
+    $changed = false;
+    $now = agency_now_iso();
+
+    foreach ($rows as $idx => $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        $name = trim((string)($row['name'] ?? ''));
+        $slug = trim((string)($row['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug($name);
+            $row['slug'] = $slug;
+        }
+        if ($slug === '' || !isset($targetMap[$slug])) {
+            continue;
+        }
+
+        $matched[$slug] = true;
+        $isDismissed = agency_text_lower(trim((string)($row['employment_status'] ?? ''))) === 'dismissed'
+            || (array_key_exists('active', $row) && (bool)$row['active'] === false);
+
+        if ($isDismissed) {
+            $already[] = [
+                'name' => $name !== '' ? $name : (string)$targetMap[$slug]['name'],
+                'slug' => $slug,
+            ];
+            continue;
+        }
+
+        $row['employment_status'] = 'dismissed';
+        $row['active'] = false;
+        $row['dismissed_at'] = $now;
+        $row['dismissed_by'] = $actorUserId;
+        $row['dismissal_reason'] = $reason;
+        $row['updated_at'] = $now;
+        $rows[$idx] = $row;
+        $changed = true;
+
+        $dismissed[] = [
+            'name' => $name !== '' ? $name : (string)$targetMap[$slug]['name'],
+            'slug' => $slug,
+        ];
+    }
+
+    $notFound = [];
+    foreach ($targetMap as $slug => $meta) {
+        if (!isset($matched[$slug])) {
+            $notFound[] = (string)$meta['name'];
+        }
+    }
+
+    if ($changed) {
+        $doc['agents'] = array_values($rows);
+        agency_save_registry_doc($docRoot, $doc);
+    }
+
+    return [
+        'ok' => true,
+        'dismissed' => $dismissed,
+        'already_dismissed' => $already,
+        'not_found' => $notFound,
+    ];
+}
+
+/**
+ * @param array<string,mixed> $hrResult
+ */
+function agency_build_hr_confirmation_text(array $hrResult, string $preferredName, int $activeCount): string
+{
+    $prefix = $preferredName !== '' ? $preferredName . ', ' : '';
+    $dismissed = isset($hrResult['dismissed']) && is_array($hrResult['dismissed']) ? $hrResult['dismissed'] : [];
+    $already = isset($hrResult['already_dismissed']) && is_array($hrResult['already_dismissed']) ? $hrResult['already_dismissed'] : [];
+    $notFound = isset($hrResult['not_found']) && is_array($hrResult['not_found']) ? $hrResult['not_found'] : [];
+
+    $lines = [];
+    if (count($dismissed) > 0) {
+        $names = array_map(static fn(array $a): string => (string)($a['name'] ?? ''), $dismissed);
+        $names = array_values(array_filter($names, static fn(string $n): bool => trim($n) !== ''));
+        $lines[] = 'desligamento executado para: ' . implode(', ', $names) . '.';
+    }
+    if (count($already) > 0) {
+        $names = array_map(static fn(array $a): string => (string)($a['name'] ?? ''), $already);
+        $names = array_values(array_filter($names, static fn(string $n): bool => trim($n) !== ''));
+        $lines[] = 'já estavam desligados: ' . implode(', ', $names) . '.';
+    }
+    if (count($notFound) > 0) {
+        $lines[] = 'não encontrei no registry: ' . implode(', ', $notFound) . '.';
+    }
+    if (count($lines) === 0) {
+        $lines[] = 'não consegui identificar quais agentes desligar. Pode citar com @nome?';
+    }
+    $lines[] = 'equipe ativa agora: ' . $activeCount . ' agente(s).';
+
+    return $prefix . implode(' ', $lines);
 }
 
 /**
@@ -1131,7 +1471,9 @@ function agency_handle_chat_api(string $docRoot): bool
     $session = agency_add_session_message($session, 'user', 'Voce', $message);
     $session['updated_at'] = agency_now_iso();
 
-    $agents = agency_load_registry_agents($docRoot);
+    $actions = [];
+    $allAgents = agency_load_registry_agents($docRoot, true);
+    $agents = $allAgents;
     if (count($agents) === 0) {
         agency_append_event(
             $docRoot,
@@ -1141,6 +1483,112 @@ function agency_handle_chat_api(string $docRoot): bool
             ['conversation_id' => $conversationId]
         );
         return renderJson(['ok' => false, 'error' => 'REGISTRY_EMPTY'], 500);
+    }
+
+    $hrAction = agency_detect_hr_action($message, $allAgents);
+    if ((string)$hrAction['action'] === 'dismiss') {
+        agency_append_event(
+            $docRoot,
+            'hr_order_detected',
+            'warn',
+            'Ordem de desligamento detectada no chat.',
+            [
+                'conversation_id' => $conversationId,
+                'user_id' => $userId,
+                'targets' => array_map(static fn(array $a): string => (string)($a['slug'] ?? ''), (array)($hrAction['targets'] ?? [])),
+            ]
+        );
+
+        $hrResult = agency_apply_dismissals(
+            $docRoot,
+            (array)($hrAction['targets'] ?? []),
+            $userId,
+            (string)($hrAction['reason'] ?? 'nao informado')
+        );
+
+        $activeAgents = agency_load_registry_agents($docRoot, false);
+        $hrText = agency_build_hr_confirmation_text($hrResult, $preferredName, count($activeAgents));
+        $responses = [
+            [
+                'order' => 1,
+                'agent_slug' => 'assistant',
+                'agent_name' => 'assistant',
+                'department' => 'direcao',
+                'department_label' => agency_department_label('direcao'),
+                'source' => 'system',
+                'provider' => 'local',
+                'model' => 'hr-policy',
+                'text' => $hrText,
+            ],
+        ];
+        $actions[] = [
+            'type' => 'dismiss',
+            'result' => $hrResult,
+            'active_after' => count($activeAgents),
+        ];
+
+        $session = agency_add_session_message($session, 'assistant', 'assistant', $hrText, 'assistant');
+        $session['updated_at'] = agency_now_iso();
+        $memory['sessions'][$conversationId] = $session;
+        agency_save_memory($docRoot, $memory);
+
+        agency_append_event(
+            $docRoot,
+            'hr_action_executed',
+            'success',
+            'Ordem de desligamento processada e persistida no registry.',
+            [
+                'conversation_id' => $conversationId,
+                'dismissed' => count((array)($hrResult['dismissed'] ?? [])),
+                'already_dismissed' => count((array)($hrResult['already_dismissed'] ?? [])),
+                'not_found' => count((array)($hrResult['not_found'] ?? [])),
+                'active_after' => count($activeAgents),
+            ]
+        );
+
+        agency_append_event(
+            $docRoot,
+            'request_completed',
+            'success',
+            'Orquestracao finalizada com acao administrativa de RH.',
+            [
+                'conversation_id' => $conversationId,
+                'responses' => 1,
+                'actions' => 1,
+            ]
+        );
+
+        return renderJson(
+            [
+                'ok' => true,
+                'conversation_id' => $conversationId,
+                'user_id' => $userId,
+                'preferred_name' => $preferredName,
+                'routing' => [
+                    'mentions' => agency_parse_mentions($message),
+                    'mention_all' => (bool)($hrAction['mention_all'] ?? false),
+                    'topic_departments' => [],
+                    'responsibility_question' => false,
+                    'responders' => ['assistant'],
+                ],
+                'actions' => $actions,
+                'responses' => $responses,
+                'monitor_url' => 'http://127.0.0.1:8095/admin-memoria-squad.html',
+            ],
+            200
+        );
+    }
+
+    $agents = agency_load_registry_agents($docRoot, false);
+    if (count($agents) === 0) {
+        agency_append_event(
+            $docRoot,
+            'routing_failed',
+            'error',
+            'Nao ha agentes ativos no registry.',
+            ['conversation_id' => $conversationId]
+        );
+        return renderJson(['ok' => false, 'error' => 'NO_ACTIVE_AGENTS'], 500);
     }
 
     $routing = agency_select_responders($agents, $message);
@@ -1165,6 +1613,7 @@ function agency_handle_chat_api(string $docRoot): bool
     );
 
     $modelConfig = agency_model_config();
+    $companyContext = agency_load_company_context($docRoot);
     agency_append_event(
         $docRoot,
         'model_strategy',
@@ -1224,7 +1673,8 @@ function agency_handle_chat_api(string $docRoot): bool
             $responsibilityQuestion,
             $preferredName,
             $isLeader,
-            $session
+            $session,
+            $companyContext
         );
 
         $source = 'fallback';
@@ -1327,6 +1777,7 @@ function agency_handle_chat_api(string $docRoot): bool
                 'responsibility_question' => $responsibilityQuestion,
                 'responders' => array_map(static fn(array $a): string => (string)$a['slug'], $responders),
             ],
+            'actions' => $actions,
             'responses' => $responses,
             'monitor_url' => 'http://127.0.0.1:8095/admin-memoria-squad.html',
         ],

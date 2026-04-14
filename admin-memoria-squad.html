@@ -104,9 +104,9 @@
   </main>
 
   <script>
-    const CORE=["memory-enterprise/10_STATE/10_PROJECT_STATE.yaml","memory-enterprise/30_EXECUTION/31_OPEN_TASKS.yaml","memory-enterprise/30_EXECUTION/33_RISK_REGISTER.yaml","memory-enterprise/40_QUALITY/40_TEST_STATUS.yaml","memory-enterprise/60_AGENT_MEMORY/runtime/agents-registry.json","memory-enterprise/60_AGENT_MEMORY/runtime/agent-heartbeats.json","memory-enterprise/60_AGENT_MEMORY/handoffs/latest.md"];
+    const CORE=["memory-enterprise/10_STATE/10_PROJECT_STATE.yaml","memory-enterprise/30_EXECUTION/31_OPEN_TASKS.yaml","memory-enterprise/30_EXECUTION/33_RISK_REGISTER.yaml","memory-enterprise/40_QUALITY/40_TEST_STATUS.yaml","memory-enterprise/60_AGENT_MEMORY/runtime/agents-registry.json","memory-enterprise/60_AGENT_MEMORY/runtime/agent-heartbeats.json","memory-enterprise/60_AGENT_MEMORY/runtime/agencia-chat-events.json","memory-enterprise/60_AGENT_MEMORY/handoffs/latest.md"];
     const FALL=[{name:"assistant",path:"memory-enterprise/60_AGENT_MEMORY/working_sets/assistant.yaml"}];
-    const S={cache:new Map(),af:[...FALL],ev:[],rq:[],prev:{i:false,a:{},t:{},s:{}},hb:{generatedAt:"",agents:{}},auto:true,iv:2000,t:null,busy:false,cycle:0,lastMs:0,lastErr:[],lastReq:0};
+    const S={cache:new Map(),af:[...FALL],ev:[],rq:[],prev:{i:false,a:{},t:{},s:{}},hb:{generatedAt:"",agents:{}},chatSeq:0,auto:true,iv:2000,t:null,busy:false,cycle:0,lastMs:0,lastErr:[],lastReq:0};
 
     const esc=s=>String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
     const slug=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")||"agent";
@@ -131,7 +131,7 @@
       S.cache.clear();S.lastErr=[];const q0=S.rq.length;
       for(const p of CORE){try{S.cache.set(p,await get(p,cy))}catch(e){S.cache.set(p,"");S.lastErr.push(p+": "+(e.message||"erro"))}}
       const reg=json(S.cache.get("memory-enterprise/60_AGENT_MEMORY/runtime/agents-registry.json")||"");const ag=Array.isArray(reg?.agents)?reg.agents:[];
-      S.af=ag.length?ag.map(x=>({name:x.name||slug(x.slug),path:x.working_set||("memory-enterprise/60_AGENT_MEMORY/working_sets/"+slug(x.slug||x.name)+".yaml"),specialty:x.specialty||"",profile:x.profile||""})):[...FALL];
+      S.af=ag.length?ag.map(x=>({name:x.name||slug(x.slug),path:x.working_set||("memory-enterprise/60_AGENT_MEMORY/working_sets/"+slug(x.slug||x.name)+".yaml"),specialty:x.specialty||"",profile:x.profile||"",employmentStatus:String(x.employment_status||"").toLowerCase(),isActive:typeof x.active==="boolean"?x.active:true})):[...FALL];
       for(const a of S.af){try{S.cache.set(a.path,await get(a.path,cy))}catch(e){S.cache.set(a.path,"");S.lastErr.push(a.path+": "+(e.message||"erro"))}}
       const hbj=json(S.cache.get("memory-enterprise/60_AGENT_MEMORY/runtime/agent-heartbeats.json")||"")||{};
       S.hb={generatedAt:hbj.generated_at||"",agents:(hbj&&typeof hbj.agents==="object"&&hbj.agents)?hbj.agents:{}};
@@ -142,8 +142,38 @@
       const t=items(S.cache.get("memory-enterprise/30_EXECUTION/31_OPEN_TASKS.yaml")||"","tasks");
       const r=items(S.cache.get("memory-enterprise/30_EXECUTION/33_RISK_REGISTER.yaml")||"","risks");
       const su=items(S.cache.get("memory-enterprise/40_QUALITY/40_TEST_STATUS.yaml")||"","suites");
-      const a={};for(const it of S.af){const tx=S.cache.get(it.path)||"",h=hbBy(it.name,it.path)||{},ya=bullets(tx,"active_task_ids"),ra=Array.isArray(h.active_task_ids)?h.active_task_ids.map(x=>String(x||"").trim()).filter(Boolean):[];a[slug(it.name)]={name:it.name,path:it.path,specialty:it.specialty||"",profile:it.profile||"",updatedAt:scalar(tx,"updated_at")||h.updated_at||"-",status:scalar(tx,"status")||h.status||"idle",taskId:scalar(tx,"current_task_id")||h.current_task_id||"",task:scalar(tx,"current_task")||h.current_task||"",active:ya.length?ya:ra,note:h.note||"",history:Array.isArray(h.history)?h.history:[]}}
-      return{tasks:t,risks:r,suites:su,agents:a}
+      const ch=json(S.cache.get("memory-enterprise/60_AGENT_MEMORY/runtime/agencia-chat-events.json")||"")||{};
+      const chatEvents=Array.isArray(ch?.events)?ch.events:[];
+      const a={};
+      for(const it of S.af){
+        const tx=S.cache.get(it.path)||"",h=hbBy(it.name,it.path)||{};
+        const isDismissed=(it.isActive===false)||String(it.employmentStatus||"").toLowerCase()==="dismissed";
+        const ya=bullets(tx,"active_task_ids");
+        const ra=Array.isArray(h.active_task_ids)?h.active_task_ids.map(x=>String(x||"").trim()).filter(Boolean):[];
+        const active=isDismissed?[]:Array.from(new Set([...(ya||[]),...(ra||[])])).filter(Boolean);
+        const hbStatus=String(h.status||"").trim();
+        const wsStatus=scalar(tx,"status");
+        const hbTaskId=String(h.current_task_id||"").trim();
+        const wsTaskId=scalar(tx,"current_task_id");
+        const hbTask=String(h.current_task||"").trim();
+        const wsTask=scalar(tx,"current_task");
+        const hbUpdated=String(h.updated_at||"").trim();
+        const wsUpdated=scalar(tx,"updated_at");
+        a[slug(it.name)]={
+          name:it.name,
+          path:it.path,
+          specialty:it.specialty||"",
+          profile:it.profile||"",
+          updatedAt:hbUpdated||wsUpdated||"-",
+          status:isDismissed?"dismissed":(hbStatus||wsStatus||"idle"),
+          taskId:hbTaskId||wsTaskId||"",
+          task:hbTask||wsTask||"",
+          active:active,
+          note:h.note||"",
+          history:Array.isArray(h.history)?h.history:[]
+        };
+      }
+      return{tasks:t,risks:r,suites:su,agents:a,chatEvents:chatEvents}
     }
 
     function detect(X){
@@ -156,6 +186,17 @@
       }
       const PT=P.t||{},CT={};for(const t of X.tasks){const id=String(t.id||"").trim();if(!id)continue;CT[id]=t;const o=PT[id];if(!o){if(P.i)ev("task.new","info",`Nova tarefa ${id}`,{title:t.title||""});continue}if(String(o.status||"")!==String(t.status||""))ev("task.status",/fail|blocked|error/i.test(t.status||"")?"bad":(/done|pass|success/i.test(t.status||"")?"good":"warn"),`Tarefa ${id}: ${o.status||"-"} -> ${t.status||"-"}`,{owner:t.owner_agent||""})}
       const PS=P.s||{},CS={};for(const s of X.suites){const id=String(s.id||s.product_area||Math.random()).trim();CS[id]=s;const o=PS[id];if(!o){if(P.i)ev("suite.new","info","Suite registrada: "+(s.id||id),{});continue}if(String(o.status||"")!==String(s.status||""))ev("suite.status",/fail|red|error/i.test(s.status||"")?"bad":(/pass|done|green/i.test(s.status||"")?"good":"warn"),`Suite ${(s.id||id)}: ${o.status||"-"} -> ${s.status||"-"}`,{})}
+      const CE=Array.isArray(X.chatEvents)?X.chatEvents:[];
+      let maxSeq=Number(S.chatSeq||0);
+      for(const c of CE){
+        const seq=Number(c?.seq||0);if(!(seq>Number(S.chatSeq||0)))continue;maxSeq=Math.max(maxSeq,seq);
+        const kind=`chat.${String(c?.kind||"step")}`;
+        const lv=String(c?.level||"info").toLowerCase();
+        const level=lv==="error"?"bad":(lv==="success"?"good":(lv==="warn"?"warn":"info"));
+        const msg=String(c?.message||"Orquestracao de chat");
+        ev(kind,level,msg,c?.meta&&typeof c.meta==="object"?c.meta:{});
+      }
+      S.chatSeq=maxSeq;
       if(S.lastErr.length)ev("fetch.partial","warn",`Leitura parcial: ${S.lastErr.length} arquivo(s) com falha.`,{erro:S.lastErr[0]||""});
       S.prev={i:true,a:A,t:CT,s:CS}
     }
