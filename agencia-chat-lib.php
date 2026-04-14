@@ -725,7 +725,7 @@ function agency_yaml_list(string $text, string $key): array
 }
 
 /**
- * @return array<int, array{name:string,slug:string,specialty:string,working_set:string,profile:string,employment_status:string,active:bool,dismissed_at:string,dismissed_by:string,dismissal_reason:string}>
+ * @return array<int, array{name:string,slug:string,specialty:string,working_set:string,profile:string,employment_status:string,active:bool,dismissed_at:string,dismissed_by:string,dismissal_reason:string,department_override:string}>
  */
 function agency_load_registry_agents(string $docRoot, bool $includeInactive = false): array
 {
@@ -773,6 +773,7 @@ function agency_load_registry_agents(string $docRoot, bool $includeInactive = fa
             'dismissed_at' => trim((string)($row['dismissed_at'] ?? '')),
             'dismissed_by' => trim((string)($row['dismissed_by'] ?? '')),
             'dismissal_reason' => trim((string)($row['dismissal_reason'] ?? '')),
+            'department_override' => trim((string)($row['department_override'] ?? '')),
         ];
     }
 
@@ -795,6 +796,11 @@ function agency_load_registry_agents(string $docRoot, bool $includeInactive = fa
 
 function agency_department_for_agent(array $agent): string
 {
+    $override = agency_text_lower(trim((string)($agent['department_override'] ?? '')));
+    if (in_array($override, ['tech', 'design', 'marketing', 'comercial', 'voz', 'direcao'], true)) {
+        return $override;
+    }
+
     $txt = strtolower(($agent['name'] ?? '') . ' ' . ($agent['specialty'] ?? ''));
     if (preg_match('/jarvina|locutora|voz|audio|musical|trilha|narr/', $txt) === 1) {
         return 'voz';
@@ -1154,6 +1160,614 @@ function agency_build_hr_confirmation_text(array $hrResult, string $preferredNam
     return $prefix . implode(' ', $lines);
 }
 
+function agency_extract_action_reason(string $message): string
+{
+    $reason = '';
+    if (preg_match('/\b(?:por|motivo|razao|razão)\b\s+(.+)$/iu', $message, $m) === 1) {
+        $reason = trim((string)($m[1] ?? ''));
+    }
+    return $reason !== '' ? $reason : 'nao informado';
+}
+
+function agency_detect_department_alias(string $text): string
+{
+    $n = agency_normalize_text($text);
+    if ($n === '') {
+        return '';
+    }
+    $map = [
+        'tech' => ['tech', 'tecnologia', 'produto e tecnologia', 'engenharia', 'dev', 'desenvolvimento', 'ti', 'produto'],
+        'design' => ['design', 'criacao', 'criativo', 'ux', 'ui', 'direcao criativa'],
+        'marketing' => ['marketing', 'midia', 'social', 'seo', 'performance', 'trafego'],
+        'comercial' => ['comercial', 'vendas', 'regional', 'clientes', 'negocios'],
+        'voz' => ['voz', 'audio', 'locucao', 'conteudo', 'trilha', 'narracao'],
+        'direcao' => ['direcao', 'operacoes', 'gestao', 'rh', 'people', 'ceo', 'administrativo'],
+    ];
+    foreach ($map as $dept => $aliases) {
+        foreach ($aliases as $alias) {
+            $aliasNorm = agency_normalize_text($alias);
+            if ($aliasNorm !== '' && agency_text_contains($n, $aliasNorm)) {
+                return $dept;
+            }
+        }
+    }
+    return '';
+}
+
+function agency_extract_target_department(string $message): string
+{
+    $patterns = [
+        '/\b(?:para|pro|pra|no|na|em)\s+([^\.,;!\?\n]+)/iu',
+        '/\bdepartamento\s+([^\.,;!\?\n]+)/iu',
+    ];
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $message, $m) !== 1) {
+            continue;
+        }
+        $candidate = trim((string)($m[1] ?? ''));
+        if ($candidate === '') {
+            continue;
+        }
+        $dept = agency_detect_department_alias($candidate);
+        if ($dept !== '') {
+            return $dept;
+        }
+    }
+    return agency_detect_department_alias($message);
+}
+
+/**
+ * @param array<int, array<string,mixed>> $agents
+ * @return array<int, array<string,mixed>>
+ */
+function agency_extract_targets_from_message(string $message, array $agents): array
+{
+    $mentions = agency_parse_mentions($message);
+    $targets = agency_resolve_mentions($agents, $mentions);
+
+    $normalized = agency_normalize_text($message);
+    $msgPadded = ' ' . $normalized . ' ';
+    foreach ($agents as $agent) {
+        if (!is_array($agent)) {
+            continue;
+        }
+        $name = trim((string)($agent['name'] ?? ''));
+        $slug = trim((string)($agent['slug'] ?? ''));
+        if ($name === '' && $slug === '') {
+            continue;
+        }
+        $nameNorm = agency_normalize_text($name);
+        if ($nameNorm !== '' && strpos($msgPadded, ' ' . $nameNorm . ' ') !== false) {
+            $targets[] = $agent;
+            continue;
+        }
+        $slugNorm = agency_normalize_text($slug);
+        if ($slugNorm !== '' && strpos($msgPadded, ' ' . $slugNorm . ' ') !== false) {
+            $targets[] = $agent;
+        }
+    }
+
+    $uniq = [];
+    foreach ($targets as $target) {
+        if (!is_array($target)) {
+            continue;
+        }
+        $slug = trim((string)($target['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug((string)($target['name'] ?? ''));
+        }
+        if ($slug === '') {
+            continue;
+        }
+        $uniq[$slug] = $target;
+    }
+    return array_values($uniq);
+}
+
+function agency_extract_new_role(string $message): string
+{
+    $role = '';
+    $patterns = [
+        '/\b(?:promov\w*|contrat\w*|admit\w*).+?\b(?:para|como)\s+(.+)$/iu',
+        '/\b(?:cargo|funcao|função)\s+de\s+(.+)$/iu',
+    ];
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $message, $m) !== 1) {
+            continue;
+        }
+        $candidate = trim((string)($m[1] ?? ''));
+        $candidate = preg_split('/\b(?:por|motivo|razao|razão|no|na|em)\b/iu', $candidate, 2)[0] ?? $candidate;
+        $candidate = trim((string)$candidate, " \t\n\r\0\x0B,.;:!?\"'");
+        if ($candidate !== '' && agency_detect_department_alias($candidate) === '') {
+            $role = $candidate;
+            break;
+        }
+    }
+    if ($role !== '' && agency_text_length($role) > 90) {
+        $role = agency_text_substr($role, 0, 90);
+    }
+    return $role;
+}
+
+/**
+ * @param array<int, array<string,mixed>> $agents
+ * @return string[]
+ */
+function agency_extract_hire_candidates(string $message, array $agents): array
+{
+    $names = [];
+    $agentBySlug = [];
+    foreach ($agents as $agent) {
+        $slug = trim((string)($agent['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug((string)($agent['name'] ?? ''));
+        }
+        if ($slug !== '') {
+            $agentBySlug[$slug] = trim((string)($agent['name'] ?? $slug));
+        }
+    }
+
+    $mentions = agency_parse_mentions($message);
+    foreach ($mentions as $mention) {
+        if (isset($agentBySlug[$mention])) {
+            $names[] = $agentBySlug[$mention];
+        } else {
+            $names[] = ucwords(str_replace(['-', '_'], ' ', $mention));
+        }
+    }
+
+    if (preg_match('/\b(?:contrat\w*|admit\w*)\b\s+(.+)$/iu', $message, $m) === 1) {
+        $chunk = trim((string)($m[1] ?? ''));
+        $chunk = preg_split('/\b(?:para|pro|pra|como|no|na|em|de|por|com)\b/iu', $chunk, 2)[0] ?? $chunk;
+        $parts = preg_split('/\s*(?:,|;|\be\b)\s*/iu', $chunk) ?: [];
+        foreach ($parts as $part) {
+            $candidate = trim((string)$part, " \t\n\r\0\x0B\"'`.,;:!?");
+            if ($candidate === '' || preg_match('/^@/u', $candidate) === 1) {
+                continue;
+            }
+            if (agency_detect_department_alias($candidate) !== '') {
+                continue;
+            }
+            $names[] = $candidate;
+        }
+    }
+
+    $clean = [];
+    foreach ($names as $name) {
+        $n = trim((string)$name);
+        if ($n === '') {
+            continue;
+        }
+        if (agency_text_length($n) > 80) {
+            $n = agency_text_substr($n, 0, 80);
+        }
+        $slug = agency_slug($n);
+        if ($slug === '') {
+            continue;
+        }
+        $clean[$slug] = $n;
+    }
+    return array_values($clean);
+}
+
+/**
+ * @param array<int, array<string,mixed>> $agents
+ * @return array{action:string,targets:array<int,array<string,mixed>>,reason:string,mention_all:bool,new_role:string,new_department:string,candidates:string[]}
+ */
+function agency_detect_admin_action(string $message, array $agents): array
+{
+    $normalized = agency_normalize_text($message);
+    $mentions = agency_parse_mentions($message);
+    $mentionAll = in_array('todos', $mentions, true) || in_array('all', $mentions, true)
+        || preg_match('/\b(todos|todo mundo)\b/', $normalized) === 1;
+
+    $action = 'none';
+    if (preg_match('/\b(demit|demissao|deslig|dispens|afast)\w*\b/', $normalized) === 1) {
+        $action = 'dismiss';
+    } elseif (
+        preg_match('/\b(reativ|recontrat|readmit)\w*\b/', $normalized) === 1
+        || strpos($normalized, 'trazer de volta') !== false
+    ) {
+        $action = 'reactivate';
+    } elseif (preg_match('/\b(promov|promoc)\w*\b/', $normalized) === 1) {
+        $action = 'promote';
+    } elseif (preg_match('/\b(transfer|realoc|mover|remanej)\w*\b/', $normalized) === 1) {
+        $action = 'transfer';
+    } elseif (preg_match('/\b(contrat|admit)\w*\b/', $normalized) === 1) {
+        $action = 'hire';
+    }
+
+    if ($action === 'none') {
+        return [
+            'action' => 'none',
+            'targets' => [],
+            'reason' => '',
+            'mention_all' => false,
+            'new_role' => '',
+            'new_department' => '',
+            'candidates' => [],
+        ];
+    }
+
+    $targets = agency_extract_targets_from_message($message, $agents);
+    if ($mentionAll && count($targets) === 0 && $action !== 'hire') {
+        foreach ($agents as $agent) {
+            if (!is_array($agent)) {
+                continue;
+            }
+            $targets[] = $agent;
+        }
+    }
+
+    $newDept = agency_extract_target_department($message);
+    $newRole = agency_extract_new_role($message);
+    $candidates = $action === 'hire' ? agency_extract_hire_candidates($message, $agents) : [];
+
+    return [
+        'action' => $action,
+        'targets' => $targets,
+        'reason' => agency_extract_action_reason($message),
+        'mention_all' => $mentionAll,
+        'new_role' => $newRole,
+        'new_department' => $newDept,
+        'candidates' => $candidates,
+    ];
+}
+
+/**
+ * @param array<int,mixed> $rows
+ */
+function agency_find_registry_row_index(array $rows, string $targetSlug): int
+{
+    $slug = agency_slug($targetSlug);
+    if ($slug === '') {
+        return -1;
+    }
+    foreach ($rows as $idx => $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        $rowSlug = trim((string)($row['slug'] ?? ''));
+        if ($rowSlug === '') {
+            $rowSlug = agency_slug((string)($row['name'] ?? ''));
+        }
+        if ($rowSlug !== '' && $rowSlug === $slug) {
+            return (int)$idx;
+        }
+    }
+    return -1;
+}
+
+/**
+ * @param array<int, array<string,mixed>> $targets
+ * @return array{ok:bool,reactivated:array<int,array<string,string>>,already_active:array<int,array<string,string>>,not_found:array<int,string>}
+ */
+function agency_apply_reactivations(string $docRoot, array $targets, string $actorUserId, string $reason): array
+{
+    $doc = agency_load_registry_doc($docRoot);
+    $rows = isset($doc['agents']) && is_array($doc['agents']) ? $doc['agents'] : [];
+    $reactivated = [];
+    $already = [];
+    $notFound = [];
+    $changed = false;
+    $now = agency_now_iso();
+
+    foreach ($targets as $target) {
+        $name = trim((string)($target['name'] ?? ''));
+        $slug = trim((string)($target['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug($name);
+        }
+        if ($slug === '') {
+            continue;
+        }
+        $idx = agency_find_registry_row_index($rows, $slug);
+        if ($idx < 0) {
+            $notFound[] = $name !== '' ? $name : $slug;
+            continue;
+        }
+        $row = is_array($rows[$idx]) ? $rows[$idx] : [];
+        $isDismissed = agency_text_lower(trim((string)($row['employment_status'] ?? ''))) === 'dismissed'
+            || (array_key_exists('active', $row) && (bool)$row['active'] === false);
+        if (!$isDismissed) {
+            $already[] = ['name' => $name !== '' ? $name : (string)($row['name'] ?? $slug), 'slug' => $slug];
+            continue;
+        }
+        $row['employment_status'] = 'active';
+        $row['active'] = true;
+        $row['dismissed_at'] = '';
+        $row['dismissed_by'] = '';
+        $row['dismissal_reason'] = '';
+        $row['reactivated_at'] = $now;
+        $row['reactivated_by'] = $actorUserId;
+        $row['reactivation_reason'] = $reason;
+        $row['updated_at'] = $now;
+        $rows[$idx] = $row;
+        $changed = true;
+        $reactivated[] = ['name' => (string)($row['name'] ?? $slug), 'slug' => $slug];
+    }
+
+    if ($changed) {
+        $doc['agents'] = array_values($rows);
+        agency_save_registry_doc($docRoot, $doc);
+    }
+
+    return ['ok' => true, 'reactivated' => $reactivated, 'already_active' => $already, 'not_found' => $notFound];
+}
+
+/**
+ * @param array<int, array<string,mixed>> $targets
+ * @return array{ok:bool,promoted:array<int,array<string,string>>,blocked_dismissed:array<int,array<string,string>>,not_found:array<int,string>}
+ */
+function agency_apply_promotions(string $docRoot, array $targets, string $actorUserId, string $reason, string $newRole): array
+{
+    $doc = agency_load_registry_doc($docRoot);
+    $rows = isset($doc['agents']) && is_array($doc['agents']) ? $doc['agents'] : [];
+    $promoted = [];
+    $blocked = [];
+    $notFound = [];
+    $changed = false;
+    $now = agency_now_iso();
+    $role = trim($newRole) !== '' ? trim($newRole) : 'Especialista Senior';
+
+    foreach ($targets as $target) {
+        $name = trim((string)($target['name'] ?? ''));
+        $slug = trim((string)($target['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug($name);
+        }
+        if ($slug === '') {
+            continue;
+        }
+        $idx = agency_find_registry_row_index($rows, $slug);
+        if ($idx < 0) {
+            $notFound[] = $name !== '' ? $name : $slug;
+            continue;
+        }
+        $row = is_array($rows[$idx]) ? $rows[$idx] : [];
+        $isDismissed = agency_text_lower(trim((string)($row['employment_status'] ?? ''))) === 'dismissed'
+            || (array_key_exists('active', $row) && (bool)$row['active'] === false);
+        if ($isDismissed) {
+            $blocked[] = ['name' => (string)($row['name'] ?? $slug), 'slug' => $slug];
+            continue;
+        }
+        $row['specialty'] = $role;
+        $row['promoted_at'] = $now;
+        $row['promoted_by'] = $actorUserId;
+        $row['promotion_reason'] = $reason;
+        $row['updated_at'] = $now;
+        $rows[$idx] = $row;
+        $changed = true;
+        $promoted[] = ['name' => (string)($row['name'] ?? $slug), 'slug' => $slug, 'new_role' => $role];
+    }
+
+    if ($changed) {
+        $doc['agents'] = array_values($rows);
+        agency_save_registry_doc($docRoot, $doc);
+    }
+
+    return ['ok' => true, 'promoted' => $promoted, 'blocked_dismissed' => $blocked, 'not_found' => $notFound];
+}
+
+/**
+ * @param array<int, array<string,mixed>> $targets
+ * @return array{ok:bool,transferred:array<int,array<string,string>>,blocked_dismissed:array<int,array<string,string>>,not_found:array<int,string>,invalid_department:bool}
+ */
+function agency_apply_transfers(string $docRoot, array $targets, string $actorUserId, string $reason, string $newDepartment): array
+{
+    $dept = agency_detect_department_alias($newDepartment);
+    if ($dept === '') {
+        return [
+            'ok' => true,
+            'transferred' => [],
+            'blocked_dismissed' => [],
+            'not_found' => [],
+            'invalid_department' => true,
+        ];
+    }
+
+    $doc = agency_load_registry_doc($docRoot);
+    $rows = isset($doc['agents']) && is_array($doc['agents']) ? $doc['agents'] : [];
+    $transferred = [];
+    $blocked = [];
+    $notFound = [];
+    $changed = false;
+    $now = agency_now_iso();
+
+    foreach ($targets as $target) {
+        $name = trim((string)($target['name'] ?? ''));
+        $slug = trim((string)($target['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = agency_slug($name);
+        }
+        if ($slug === '') {
+            continue;
+        }
+        $idx = agency_find_registry_row_index($rows, $slug);
+        if ($idx < 0) {
+            $notFound[] = $name !== '' ? $name : $slug;
+            continue;
+        }
+        $row = is_array($rows[$idx]) ? $rows[$idx] : [];
+        $isDismissed = agency_text_lower(trim((string)($row['employment_status'] ?? ''))) === 'dismissed'
+            || (array_key_exists('active', $row) && (bool)$row['active'] === false);
+        if ($isDismissed) {
+            $blocked[] = ['name' => (string)($row['name'] ?? $slug), 'slug' => $slug];
+            continue;
+        }
+        $row['department_override'] = $dept;
+        $row['transferred_at'] = $now;
+        $row['transferred_by'] = $actorUserId;
+        $row['transfer_reason'] = $reason;
+        $row['updated_at'] = $now;
+        $rows[$idx] = $row;
+        $changed = true;
+        $transferred[] = ['name' => (string)($row['name'] ?? $slug), 'slug' => $slug, 'new_department' => $dept];
+    }
+
+    if ($changed) {
+        $doc['agents'] = array_values($rows);
+        agency_save_registry_doc($docRoot, $doc);
+    }
+
+    return ['ok' => true, 'transferred' => $transferred, 'blocked_dismissed' => $blocked, 'not_found' => $notFound, 'invalid_department' => false];
+}
+
+/**
+ * @param string[] $candidateNames
+ * @return array{ok:bool,hired:array<int,array<string,string>>,reactivated:array<int,array<string,string>>,already_exists:array<int,array<string,string>>,invalid_names:array<int,string>}
+ */
+function agency_apply_hires(
+    string $docRoot,
+    array $candidateNames,
+    string $actorUserId,
+    string $reason,
+    string $role,
+    string $department
+): array {
+    $doc = agency_load_registry_doc($docRoot);
+    $rows = isset($doc['agents']) && is_array($doc['agents']) ? $doc['agents'] : [];
+    $hired = [];
+    $reactivated = [];
+    $already = [];
+    $invalid = [];
+    $changed = false;
+    $now = agency_now_iso();
+    $dept = agency_detect_department_alias($department);
+    $baseRole = trim($role) !== '' ? trim($role) : 'Especialista';
+
+    foreach ($candidateNames as $candidate) {
+        $name = trim((string)$candidate);
+        $slug = agency_slug($name);
+        if ($name === '' || $slug === '') {
+            if ($name !== '') {
+                $invalid[] = $name;
+            }
+            continue;
+        }
+
+        $idx = agency_find_registry_row_index($rows, $slug);
+        if ($idx >= 0) {
+            $row = is_array($rows[$idx]) ? $rows[$idx] : [];
+            $isDismissed = agency_text_lower(trim((string)($row['employment_status'] ?? ''))) === 'dismissed'
+                || (array_key_exists('active', $row) && (bool)$row['active'] === false);
+            if ($isDismissed) {
+                $row['employment_status'] = 'active';
+                $row['active'] = true;
+                $row['dismissed_at'] = '';
+                $row['dismissed_by'] = '';
+                $row['dismissal_reason'] = '';
+                $row['reactivated_at'] = $now;
+                $row['reactivated_by'] = $actorUserId;
+                $row['reactivation_reason'] = $reason;
+                if (trim($baseRole) !== '') {
+                    $row['specialty'] = $baseRole;
+                }
+                if ($dept !== '') {
+                    $row['department_override'] = $dept;
+                }
+                $row['updated_at'] = $now;
+                $rows[$idx] = $row;
+                $changed = true;
+                $reactivated[] = ['name' => (string)($row['name'] ?? $name), 'slug' => $slug];
+            } else {
+                $already[] = ['name' => (string)($row['name'] ?? $name), 'slug' => $slug];
+            }
+            continue;
+        }
+
+        $rows[] = [
+            'name' => $name,
+            'slug' => $slug,
+            'specialty' => $baseRole,
+            'working_set' => 'memory-enterprise/60_AGENT_MEMORY/working_sets/' . $slug . '.yaml',
+            'profile' => 'memory-enterprise/60_AGENT_MEMORY/profiles/' . $slug . '.yaml',
+            'employment_status' => 'active',
+            'active' => true,
+            'department_override' => $dept,
+            'hired_at' => $now,
+            'hired_by' => $actorUserId,
+            'hire_reason' => $reason,
+            'updated_at' => $now,
+        ];
+        $changed = true;
+        $hired[] = ['name' => $name, 'slug' => $slug];
+    }
+
+    if ($changed) {
+        $doc['agents'] = array_values($rows);
+        agency_save_registry_doc($docRoot, $doc);
+    }
+
+    return ['ok' => true, 'hired' => $hired, 'reactivated' => $reactivated, 'already_exists' => $already, 'invalid_names' => $invalid];
+}
+
+function agency_build_admin_action_confirmation_text(string $action, array $result, string $preferredName, int $activeCount): string
+{
+    $prefix = $preferredName !== '' ? $preferredName . ', ' : '';
+    $lines = [];
+
+    if ($action === 'dismiss') {
+        $dismissed = isset($result['dismissed']) && is_array($result['dismissed']) ? $result['dismissed'] : [];
+        $already = isset($result['already_dismissed']) && is_array($result['already_dismissed']) ? $result['already_dismissed'] : [];
+        $notFound = isset($result['not_found']) && is_array($result['not_found']) ? $result['not_found'] : [];
+        if (count($dismissed) > 0) {
+            $lines[] = 'desligamento executado para: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $dismissed)) . '.';
+        }
+        if (count($already) > 0) {
+            $lines[] = 'ja estavam desligados: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $already)) . '.';
+        }
+        if (count($notFound) > 0) {
+            $lines[] = 'nao encontrei no registry: ' . implode(', ', $notFound) . '.';
+        }
+    } elseif ($action === 'reactivate') {
+        $done = isset($result['reactivated']) && is_array($result['reactivated']) ? $result['reactivated'] : [];
+        $already = isset($result['already_active']) && is_array($result['already_active']) ? $result['already_active'] : [];
+        if (count($done) > 0) {
+            $lines[] = 'reativacao executada para: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $done)) . '.';
+        }
+        if (count($already) > 0) {
+            $lines[] = 'ja estavam ativos: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $already)) . '.';
+        }
+    } elseif ($action === 'promote') {
+        $done = isset($result['promoted']) && is_array($result['promoted']) ? $result['promoted'] : [];
+        $blocked = isset($result['blocked_dismissed']) && is_array($result['blocked_dismissed']) ? $result['blocked_dismissed'] : [];
+        if (count($done) > 0) {
+            $lines[] = 'promocao aplicada para: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $done)) . '.';
+        }
+        if (count($blocked) > 0) {
+            $lines[] = 'nao promovi por estarem desligados: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $blocked)) . '.';
+        }
+    } elseif ($action === 'transfer') {
+        if (!empty($result['invalid_department'])) {
+            $lines[] = 'nao identifiquei o departamento de destino. Tente: tech, design, marketing, comercial, voz ou direcao.';
+        }
+        $done = isset($result['transferred']) && is_array($result['transferred']) ? $result['transferred'] : [];
+        if (count($done) > 0) {
+            $lines[] = 'transferencia aplicada para: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $done)) . '.';
+        }
+    } elseif ($action === 'hire') {
+        $hired = isset($result['hired']) && is_array($result['hired']) ? $result['hired'] : [];
+        $reactivated = isset($result['reactivated']) && is_array($result['reactivated']) ? $result['reactivated'] : [];
+        $already = isset($result['already_exists']) && is_array($result['already_exists']) ? $result['already_exists'] : [];
+        if (count($hired) > 0) {
+            $lines[] = 'contratacao executada para: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $hired)) . '.';
+        }
+        if (count($reactivated) > 0) {
+            $lines[] = 'readmissao executada para: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $reactivated)) . '.';
+        }
+        if (count($already) > 0) {
+            $lines[] = 'ja estavam ativos: ' . implode(', ', array_map(static fn(array $a): string => (string)$a['name'], $already)) . '.';
+        }
+    }
+
+    if (count($lines) === 0) {
+        $lines[] = 'nao consegui aplicar a acao solicitada. Pode especificar com @nomedoagente e o destino/cargo?';
+    }
+    $lines[] = 'equipe ativa agora: ' . $activeCount . ' agente(s).';
+    return $prefix . implode(' ', $lines);
+}
+
 /**
  * @param array<int, array{name:string,slug:string,specialty:string,working_set:string,profile:string}> $agents
  * @return array<int, array{name:string,slug:string,specialty:string,working_set:string,profile:string}>
@@ -1485,29 +2099,63 @@ function agency_handle_chat_api(string $docRoot): bool
         return renderJson(['ok' => false, 'error' => 'REGISTRY_EMPTY'], 500);
     }
 
-    $hrAction = agency_detect_hr_action($message, $allAgents);
-    if ((string)$hrAction['action'] === 'dismiss') {
+    $adminAction = agency_detect_admin_action($message, $allAgents);
+    if ((string)$adminAction['action'] !== 'none') {
         agency_append_event(
             $docRoot,
-            'hr_order_detected',
+            'admin_order_detected',
             'warn',
-            'Ordem de desligamento detectada no chat.',
+            'Ordem administrativa detectada no chat.',
             [
                 'conversation_id' => $conversationId,
                 'user_id' => $userId,
-                'targets' => array_map(static fn(array $a): string => (string)($a['slug'] ?? ''), (array)($hrAction['targets'] ?? [])),
+                'action' => (string)$adminAction['action'],
+                'targets' => array_map(static fn(array $a): string => (string)($a['slug'] ?? ''), (array)($adminAction['targets'] ?? [])),
             ]
         );
 
-        $hrResult = agency_apply_dismissals(
-            $docRoot,
-            (array)($hrAction['targets'] ?? []),
-            $userId,
-            (string)($hrAction['reason'] ?? 'nao informado')
-        );
+        $actionType = (string)$adminAction['action'];
+        $reason = (string)($adminAction['reason'] ?? 'nao informado');
+        if ($actionType === 'dismiss') {
+            $actionResult = agency_apply_dismissals($docRoot, (array)($adminAction['targets'] ?? []), $userId, $reason);
+        } elseif ($actionType === 'reactivate') {
+            $actionResult = agency_apply_reactivations($docRoot, (array)($adminAction['targets'] ?? []), $userId, $reason);
+        } elseif ($actionType === 'promote') {
+            $actionResult = agency_apply_promotions(
+                $docRoot,
+                (array)($adminAction['targets'] ?? []),
+                $userId,
+                $reason,
+                (string)($adminAction['new_role'] ?? '')
+            );
+        } elseif ($actionType === 'transfer') {
+            $actionResult = agency_apply_transfers(
+                $docRoot,
+                (array)($adminAction['targets'] ?? []),
+                $userId,
+                $reason,
+                (string)($adminAction['new_department'] ?? '')
+            );
+        } elseif ($actionType === 'hire') {
+            $actionResult = agency_apply_hires(
+                $docRoot,
+                (array)($adminAction['candidates'] ?? []),
+                $userId,
+                $reason,
+                (string)($adminAction['new_role'] ?? ''),
+                (string)($adminAction['new_department'] ?? '')
+            );
+        } else {
+            $actionResult = ['ok' => false];
+        }
 
         $activeAgents = agency_load_registry_agents($docRoot, false);
-        $hrText = agency_build_hr_confirmation_text($hrResult, $preferredName, count($activeAgents));
+        $confirmText = agency_build_admin_action_confirmation_text(
+            $actionType,
+            is_array($actionResult) ? $actionResult : [],
+            $preferredName,
+            count($activeAgents)
+        );
         $responses = [
             [
                 'order' => 1,
@@ -1517,31 +2165,29 @@ function agency_handle_chat_api(string $docRoot): bool
                 'department_label' => agency_department_label('direcao'),
                 'source' => 'system',
                 'provider' => 'local',
-                'model' => 'hr-policy',
-                'text' => $hrText,
+                'model' => 'admin-policy',
+                'text' => $confirmText,
             ],
         ];
         $actions[] = [
-            'type' => 'dismiss',
-            'result' => $hrResult,
+            'type' => $actionType,
+            'result' => is_array($actionResult) ? $actionResult : ['ok' => false],
             'active_after' => count($activeAgents),
         ];
 
-        $session = agency_add_session_message($session, 'assistant', 'assistant', $hrText, 'assistant');
+        $session = agency_add_session_message($session, 'assistant', 'assistant', $confirmText, 'assistant');
         $session['updated_at'] = agency_now_iso();
         $memory['sessions'][$conversationId] = $session;
         agency_save_memory($docRoot, $memory);
 
         agency_append_event(
             $docRoot,
-            'hr_action_executed',
+            'admin_action_executed',
             'success',
-            'Ordem de desligamento processada e persistida no registry.',
+            'Ordem administrativa processada e persistida no registry.',
             [
                 'conversation_id' => $conversationId,
-                'dismissed' => count((array)($hrResult['dismissed'] ?? [])),
-                'already_dismissed' => count((array)($hrResult['already_dismissed'] ?? [])),
-                'not_found' => count((array)($hrResult['not_found'] ?? [])),
+                'action' => $actionType,
                 'active_after' => count($activeAgents),
             ]
         );
@@ -1550,7 +2196,7 @@ function agency_handle_chat_api(string $docRoot): bool
             $docRoot,
             'request_completed',
             'success',
-            'Orquestracao finalizada com acao administrativa de RH.',
+            'Orquestracao finalizada com acao administrativa.',
             [
                 'conversation_id' => $conversationId,
                 'responses' => 1,
@@ -1566,7 +2212,7 @@ function agency_handle_chat_api(string $docRoot): bool
                 'preferred_name' => $preferredName,
                 'routing' => [
                     'mentions' => agency_parse_mentions($message),
-                    'mention_all' => (bool)($hrAction['mention_all'] ?? false),
+                    'mention_all' => (bool)($adminAction['mention_all'] ?? false),
                     'topic_departments' => [],
                     'responsibility_question' => false,
                     'responders' => ['assistant'],

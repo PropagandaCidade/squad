@@ -575,6 +575,9 @@ function buildMeetingAndCeoFurniture() {
 }
 
 function classifyDepartment(record) {
+  const override = String(record?.departmentOverride || "").toLowerCase().trim();
+  if (override && DEPARTMENTS[override]) return override;
+
   const name = String(record.name || "").toLowerCase();
   const specialty = String(record.specialty || "").toLowerCase();
   const text = `${name} ${specialty}`;
@@ -1055,25 +1058,29 @@ async function callBackend(scope) {
 }
 
 async function readRegistryAgents() {
+  let loadedRegistry = false;
   try {
     const response = await fetch(`/memory-enterprise/60_AGENT_MEMORY/runtime/agents-registry.json?ts=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
+    loadedRegistry = true;
     const list = Array.isArray(payload?.agents) ? payload.agents : [];
     const records = list
       .map((item) => ({
         name: String(item?.name || "").trim(),
         specialty: String(item?.specialty || "").trim(),
+        departmentOverride: String(item?.department_override || "").trim().toLowerCase(),
         employmentStatus: String(item?.employment_status || "").trim().toLowerCase(),
         active: typeof item?.active === "boolean" ? item.active : true
       }))
       .filter((record) => record.name)
       .filter((record) => record.active && record.employmentStatus !== "dismissed");
     const unique = uniqueBySlug(records);
-    if (unique.length > 0) return unique.slice(0, MAX_AGENTS);
+    return unique.slice(0, MAX_AGENTS);
   } catch (err) {
     addEvent(`Aviso: registry indisponivel (${err.message}). Usando fallback.`);
   }
+  if (loadedRegistry) return [];
   return FALLBACK_AGENT_RECORDS.slice(0, MAX_AGENTS);
 }
 
@@ -1507,6 +1514,88 @@ function enqueueBackendReplies(responses) {
   runChatQueue();
 }
 
+function removeFollowOptionByName(name) {
+  const target = String(name || "").trim();
+  if (!target) return;
+  const options = Array.from(followSelect.options || []);
+  for (const option of options) {
+    if (String(option.value || "").trim() === target) {
+      followSelect.remove(option.index);
+      break;
+    }
+  }
+}
+
+function removeAgentImmediatelyBySlug(slug, reason = "desligamento") {
+  const targetSlug = slugify(slug || "");
+  if (!targetSlug) return false;
+  const agent = agentBySlug.get(targetSlug);
+  if (!agent) return false;
+
+  if (agent.bubbleTimer) {
+    clearTimeout(agent.bubbleTimer);
+    agent.bubbleTimer = null;
+  }
+  if (agent.bubble) {
+    agent.mesh.remove(agent.bubble);
+    if (agent.bubble.material?.map) agent.bubble.material.map.dispose();
+    agent.bubble.material?.dispose?.();
+    agent.bubble = null;
+  }
+
+  world.remove(agent.mesh);
+  const idx = agents.indexOf(agent);
+  if (idx >= 0) agents.splice(idx, 1);
+  agentBySlug.delete(targetSlug);
+  agentByName.delete(agent.name);
+  chatActorMap.delete(targetSlug);
+  removeFollowOptionByName(agent.name);
+
+  if (observer.follow === agent.name) {
+    observer.follow = "";
+    followSelect.value = "";
+  }
+
+  addEvent(`${agent.name} saiu da agencia imediatamente (${reason}).`);
+  refreshMetrics();
+  return true;
+}
+
+function applyBackendActions(actions) {
+  const list = Array.isArray(actions) ? actions : [];
+  if (!list.length) return;
+
+  for (const action of list) {
+    const type = String(action?.type || "").toLowerCase();
+    const result = action?.result && typeof action.result === "object" ? action.result : {};
+    if (type === "dismiss") {
+      const dismissed = Array.isArray(result.dismissed) ? result.dismissed : [];
+      let removed = 0;
+      for (const item of dismissed) {
+        const slug = String(item?.slug || item?.name || "").trim();
+        if (removeAgentImmediatelyBySlug(slug, "demissao")) removed += 1;
+      }
+      if (removed > 0) {
+        addEvent(`Demissao aplicada visualmente: ${removed} agente(s) removido(s) da sala.`);
+      }
+      continue;
+    }
+
+    if (type === "hire") {
+      const hired = Array.isArray(result.hired) ? result.hired : [];
+      const reactivated = Array.isArray(result.reactivated) ? result.reactivated : [];
+      if (hired.length || reactivated.length) {
+        addEvent("Cadastro de equipe atualizado no backend. Recarregue a pagina para redistribuir os novos assentos.");
+      }
+      continue;
+    }
+
+    if (type === "reactivate" || type === "promote" || type === "transfer") {
+      addEvent(`Ordem '${type}' executada no backend. Recarregue a pagina para refletir toda a estrutura visual.`);
+    }
+  }
+}
+
 async function requestBackendChat(message) {
   const payload = {
     message,
@@ -1547,6 +1636,7 @@ async function handleChatSend(rawMessage) {
   try {
     const payload = await requestBackendChat(message);
     const responses = Array.isArray(payload?.responses) ? payload.responses : [];
+    applyBackendActions(payload?.actions);
     if (payload?.preferred_name) {
       addEvent(`Memoria do chat ativa para: ${payload.preferred_name}.`);
     }
